@@ -5,7 +5,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:task_management/core/cache/app_cache.dart';
 import 'package:task_management/core/services/ad_mob_service.dart';
 import 'package:task_management/core/theme/app_text_theme.dart';
-import 'src/view/welcome_page.dart';
+import 'package:task_management/src/api/database_controller.dart';
+import 'src/view/pages/main_page.dart';
 import 'injection_container.dart' as di;
 
 Future<void> main() async {
@@ -14,10 +15,13 @@ Future<void> main() async {
   try {
     await di.configureDependencies();
 
+    // Initialize Database
+    final databaseController = di.sl<DatabaseController>();
+    await databaseController.initializeDatabase();
 
     // Initialize AppCache
     await AppCache.initializeCache();
-    
+
     // Initialize NotificationService
     NotificationService.initialize();
     NotificationService.ensurePermission();
@@ -126,7 +130,7 @@ class MyApp extends StatelessWidget {
         Locale('ar', ''), // Arabic
       ],
       locale: const Locale('ar', 'SY'),
-      home: const _AppLifecycleWrapper(child: WelcomePage()),
+      home: const _AppLifecycleWrapper(child: MainPage()),
       builder: (context, child) {
         return Directionality(
           textDirection: TextDirection.rtl,

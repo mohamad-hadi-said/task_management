@@ -1,8 +1,9 @@
 import 'package:task_management/core/utils/toast.dart';
-import 'package:task_management/src/logic/azkar/azkar_bloc.dart';
+import 'package:task_management/injection_container.dart';
 import 'package:task_management/src/logic/home/home_bloc.dart';
 import 'package:task_management/src/logic/home/home_state.dart';
-import 'package:task_management/src/view/Azkar_screen.dart';
+import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
+import 'package:task_management/src/repositories/task_repository.dart';
 import 'package:task_management/src/view/widgets/dimond_background.dart';
 import 'package:flutter/material.dart';
 import 'package:task_management/core/cache/app_cache.dart';
@@ -22,12 +23,12 @@ class _WelcomePageState extends State<WelcomePage> {
 
   bool loadingAd = false;
 
-  HomeBloc bloc = HomeBloc();
+  TasksBloc bloc = TasksBloc(taskRepository: sl<TaskRepository>());
 
   @override
   void initState() {
     super.initState();
-    bloc.add(LoadHome());
+    bloc.add(LoadTasks());
     _refreshRemaining();
   }
 
@@ -47,11 +48,14 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<HomeBloc, HomeState>(
+    return BlocListener<TasksBloc, TasksState>(
       bloc: bloc,
       listener: (context, state) {
-        if (state.error) {
-          Toast.error(context, state.errorMessage ?? '');
+        print('------------------------');
+        print(state);
+        print('------------------------');
+        if (state is TasksError) {
+          Toast.error(context, state.message);
         }
       },
       child: Scaffold(
@@ -96,35 +100,35 @@ class _WelcomePageState extends State<WelcomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 8),
+
                       // Azkar Cards
-                      _buildAzkarCard(
-                        title: 'أذكار الصباح',
-                        subtitle: 'بعد صلاة الفجر حتى شروق الشمس',
-                        image: 'assets/images/morning.png',
-                        icon: Icons.wb_sunny,
-                        onTap: () => _navigateToAzkar(AzkarType.morning),
-                      ),
+                      // _buildAzkarCard(
+                      //   title: 'أذكار الصباح',
+                      //   subtitle: 'بعد صلاة الفجر حتى شروق الشمس',
+                      //   image: 'assets/images/morning.png',
+                      //   icon: Icons.wb_sunny,
+                      //   onTap: () => _navigateToAzkar(AzkarType.morning),
+                      // ),
 
-                      const SizedBox(height: 16),
+                      // const SizedBox(height: 16),
 
-                      _buildAzkarCard(
-                        title: 'أذكار المساء',
-                        subtitle: 'بعد صلاة العصر حتى غروب الشمس',
-                        image: 'assets/images/evening.png',
-                        icon: Icons.nights_stay,
-                        onTap: () => _navigateToAzkar(AzkarType.evening),
-                      ),
+                      // _buildAzkarCard(
+                      //   title: 'أذكار المساء',
+                      //   subtitle: 'بعد صلاة العصر حتى غروب الشمس',
+                      //   image: 'assets/images/evening.png',
+                      //   icon: Icons.nights_stay,
+                      //   onTap: () => _navigateToAzkar(AzkarType.evening),
+                      // ),
 
-                      const SizedBox(height: 16),
+                      // const SizedBox(height: 16),
 
-                      _buildAzkarCard(
-                        title: 'أذكار عامة',
-                        subtitle: 'أدعية وأذكار متنوعة لكل وقت',
-                        image: 'assets/images/general.png',
-                        icon: Icons.menu_book,
-                        onTap: () => _navigateToAzkar(AzkarType.general),
-                      ),
-
+                      // _buildAzkarCard(
+                      //   title: 'أذكار عامة',
+                      //   subtitle: 'أدعية وأذكار متنوعة لكل وقت',
+                      //   image: 'assets/images/general.png',
+                      //   icon: Icons.menu_book,
+                      //   onTap: () => _navigateToAzkar(AzkarType.general),
+                      // ),
                       const SizedBox(height: 32),
 
                       /* // Stats Section
@@ -364,13 +368,13 @@ class _WelcomePageState extends State<WelcomePage> {
     );
   }
 
-  void _navigateToAzkar(AzkarType type) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => AzkarScreen(key: Key(type.name), type: type),
-      ),
-    );
-  }
+  // void _navigateToAzkar(AzkarType type) {
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //       builder: (context) => AzkarScreen(key: Key(type.name), type: type),
+  //     ),
+  //   );
+  // }
 
   Future<dynamic> showAboutOusDialog(BuildContext context) {
     return showDialog(
