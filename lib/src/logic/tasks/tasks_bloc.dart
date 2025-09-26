@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:dartz/dartz_unsafe.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_management/src/model/task_model.dart';
 import 'package:task_management/src/model/subtask_model.dart';
@@ -18,7 +21,8 @@ class AddTask extends TasksEvent {
 
 class UpdateTask extends TasksEvent {
   final TaskModel task;
-  UpdateTask(this.task);
+
+  UpdateTask({required this.task});
 }
 
 class DeleteTask extends TasksEvent {
@@ -29,31 +33,6 @@ class DeleteTask extends TasksEvent {
 class ToggleTaskStatus extends TasksEvent {
   final int taskId;
   ToggleTaskStatus(this.taskId);
-}
-
-class LoadSubtasks extends TasksEvent {
-  final int taskId;
-  LoadSubtasks(this.taskId);
-}
-
-class AddSubtask extends TasksEvent {
-  final SubtaskModel subtask;
-  AddSubtask(this.subtask);
-}
-
-class UpdateSubtask extends TasksEvent {
-  final SubtaskModel subtask;
-  UpdateSubtask(this.subtask);
-}
-
-class DeleteSubtask extends TasksEvent {
-  final int subtaskId;
-  DeleteSubtask(this.subtaskId);
-}
-
-class ToggleSubtaskStatus extends TasksEvent {
-  final int subtaskId;
-  ToggleSubtaskStatus(this.subtaskId);
 }
 
 class SearchTasks extends TasksEvent {
@@ -103,11 +82,6 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<UpdateTask>(_onUpdateTask);
     on<DeleteTask>(_onDeleteTask);
     on<ToggleTaskStatus>(_onToggleTaskStatus);
-    on<LoadSubtasks>(_onLoadSubtasks);
-    on<AddSubtask>(_onAddSubtask);
-    on<UpdateSubtask>(_onUpdateSubtask);
-    on<DeleteSubtask>(_onDeleteSubtask);
-    on<ToggleSubtaskStatus>(_onToggleSubtaskStatus);
     on<SearchTasks>(_onSearchTasks);
     on<FilterTasksByPriority>(_onFilterTasksByPriority);
     on<FilterTasksByStatus>(_onFilterTasksByStatus);
@@ -117,7 +91,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     try {
       emit(TasksLoading());
       final tasks = await _taskRepository.getAllTasks();
-    
+
       emit(TasksLoaded(tasks: tasks));
     } catch (e) {
       emit(TasksError('فشل في تحميل المهام: ${e.toString()}'));
@@ -144,9 +118,12 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
   Future<void> _onUpdateTask(UpdateTask event, Emitter<TasksState> emit) async {
     try {
+      // print(event.task.toJson());
+
       await _taskRepository.updateTask(event.task);
 
-      // Reload tasks
+
+      // // Reload tasks
       add(LoadTasks());
     } catch (e) {
       emit(TasksError('فشل في تحديث المهمة: ${e.toString()}'));
@@ -182,90 +159,6 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       }
     } catch (e) {
       emit(TasksError('فشل في تغيير حالة المهمة: ${e.toString()}'));
-    }
-  }
-
-  Future<void> _onLoadSubtasks(
-    LoadSubtasks event,
-    Emitter<TasksState> emit,
-  ) async {
-    try {
-      final subtasks = await _taskRepository.getSubtasksByTaskId(event.taskId);
-      final currentState = state;
-      if (currentState is TasksLoaded) {
-        emit(
-          TasksLoaded(
-            tasks: currentState.tasks,
-            subtasks: subtasks,
-            selectedTaskId: event.taskId,
-          ),
-        );
-      }
-    } catch (e) {
-      emit(TasksError('فشل في تحميل المهام الفرعية: ${e.toString()}'));
-    }
-  }
-
-  Future<void> _onAddSubtask(AddSubtask event, Emitter<TasksState> emit) async {
-    try {
-      await _taskRepository.createSubtask(event.subtask);
-
-      // Reload subtasks for the task
-      add(LoadSubtasks(event.subtask.taskId));
-    } catch (e) {
-      emit(TasksError('فشل في إضافة المهمة الفرعية: ${e.toString()}'));
-    }
-  }
-
-  Future<void> _onUpdateSubtask(
-    UpdateSubtask event,
-    Emitter<TasksState> emit,
-  ) async {
-    try {
-      await _taskRepository.updateSubtask(event.subtask);
-
-      // Reload subtasks for the task
-      add(LoadSubtasks(event.subtask.taskId));
-    } catch (e) {
-      emit(TasksError('فشل في تحديث المهمة الفرعية: ${e.toString()}'));
-    }
-  }
-
-  Future<void> _onDeleteSubtask(
-    DeleteSubtask event,
-    Emitter<TasksState> emit,
-  ) async {
-    try {
-      final subtask = await _taskRepository.getSubtaskById(event.subtaskId);
-      if (subtask != null) {
-        await _taskRepository.deleteSubtask(event.subtaskId);
-
-        // Reload subtasks for the task
-        add(LoadSubtasks(subtask.taskId));
-      }
-    } catch (e) {
-      emit(TasksError('فشل في حذف المهمة الفرعية: ${e.toString()}'));
-    }
-  }
-
-  Future<void> _onToggleSubtaskStatus(
-    ToggleSubtaskStatus event,
-    Emitter<TasksState> emit,
-  ) async {
-    try {
-      final subtask = await _taskRepository.getSubtaskById(event.subtaskId);
-      if (subtask != null) {
-        if (subtask.isDone) {
-          await _taskRepository.markSubtaskAsPending(event.subtaskId);
-        } else {
-          await _taskRepository.markSubtaskAsCompleted(event.subtaskId);
-        }
-
-        // Reload subtasks for the task
-        add(LoadSubtasks(subtask.taskId));
-      }
-    } catch (e) {
-      emit(TasksError('فشل في تغيير حالة المهمة الفرعية: ${e.toString()}'));
     }
   }
 

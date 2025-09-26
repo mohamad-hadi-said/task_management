@@ -59,6 +59,9 @@ class TaskRepository {
   Future<int> updateSubtask(SubtaskModel subtask) async {
     return await _databaseHelper.updateSubtask(subtask);
   }
+  Future<int> upsertSubtask(SubtaskModel subtask) async {
+    return await _databaseHelper.upsertSubtask(subtask);
+  }
 
   Future<int> deleteSubtask(int id) async {
     return await _databaseHelper.deleteSubtask(id);

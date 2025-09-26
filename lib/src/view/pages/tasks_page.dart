@@ -293,8 +293,7 @@ class _TasksPageState extends State<TasksPage> {
   }
 
   void _navigateToTaskDetails(TaskModel task) {
-    // TODO: Implement task details page
-
+    
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -333,3 +332,26 @@ class _TasksPageState extends State<TasksPage> {
     }
   }
 }
+//  BlocConsumer(
+//                 listener: (context, state) {},
+//                 bloc: sl<TasksBloc>(),
+//                 buildWhen: (previous, current) => previous != current,
+//                 builder: (context, state) {
+//                   if (state is TasksError) {
+//                     return Center(child: Text(state.message));
+//                   }
+//                   if (state is TasksLoading) {
+//                     return Center(child: CircularProgressIndicator());
+//                   }
+//                   if (state is TasksLoaded) {
+//                     if (_subtasks.isEmpty) {
+//                       print('-------------------------');
+//                       print(state.subtasks);
+//                       print('-------------------------');
+//                       _subtasks.addAll(state.subtasks ?? []);
+//                       _buildSubtasksList();
+//                     }
+//                   }
+//                  
+//                 },
+//               ),

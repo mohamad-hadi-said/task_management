@@ -194,6 +194,29 @@ class DatabaseHelper {
     );
   }
 
+  Future<int> upsertSubtask(SubtaskModel subtask) async {
+    final db = await database;
+
+    // تحقق إذا السجل موجود
+    final List<Map<String, dynamic>> result = await db.query(
+      'subtasks',
+      where: 'id = ?',
+      whereArgs: [subtask.id],
+    );
+    if (result.isNotEmpty) {
+      // موجود → تحديث
+      return await db.update(
+        'subtasks',
+        subtask.toMap(),
+        where: 'id = ?',
+        whereArgs: [subtask.id],
+      );
+    } else {
+      // غير موجود → إدخال جديد
+      return await db.insert('subtasks', subtask.toMap());
+    }
+  }
+
   Future<int> deleteSubtask(int id) async {
     final db = await database;
     return await db.delete('subtasks', where: 'id = ?', whereArgs: [id]);

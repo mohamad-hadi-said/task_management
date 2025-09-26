@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_management/injection_container.dart';
+import 'package:task_management/src/logic/subtasks/subtasks_bloc.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 import 'package:task_management/src/model/subtask_model.dart';
 import 'package:task_management/src/model/task_model.dart';
 import 'package:task_management/core/utils/enums.dart';
 
 class EditTaskPage extends StatefulWidget {
-  const EditTaskPage({Key? key, required this.task}) : super(key: key);
+  EditTaskPage({Key? key, required this.task}) : super(key: key);
 
   final TaskModel task;
 
@@ -22,7 +23,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   late DateTime _dueDate;
   late TimeOfDay _dueTime;
   late Priority _priority;
-
+  late SubtasksBloc bloc;
   final _subtaskController = TextEditingController();
 
   @override
@@ -35,7 +36,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     _dueTime = TimeOfDay.fromDateTime(widget.task.dueTime);
     _priority = widget.task.priority;
 
-    sl<TasksBloc>().add(LoadSubtasks(widget.task.id));
+    bloc = sl<SubtasksBloc>()..add(LoadSubtasks(widget.task.id));
   }
 
   @override
@@ -135,23 +136,11 @@ class _EditTaskPageState extends State<EditTaskPage> {
               _buildPrioritySelector(),
               const SizedBox(height: 24),
 
-              _buildSectionTitle('المهام الفرعية'),
               const SizedBox(height: 8),
               _buildSubtaskInput(),
               const SizedBox(height: 8),
-              BlocBuilder(
-                bloc: sl<TasksBloc>(),
-                builder: (context, state) {
-                  if (state is TasksError) {
-                    return Center(child: Text(state.message));
-                  }
 
-                  if (state is TasksLoaded) {
-                    return _buildSubtasksList(state.subtasks);
-                  }
-                  return Center(child: CircularProgressIndicator());
-                },
-              ),
+              _buildSubtasksList(),
               const SizedBox(height: 100),
               _buildActionButtons(),
               const SizedBox(height: 100),
@@ -300,68 +289,81 @@ class _EditTaskPageState extends State<EditTaskPage> {
         ),
         const SizedBox(width: 8),
         IconButton(
-          onPressed: () {}, // _addSubtask,
+          onPressed: _addSubtask,
           icon: const Icon(Icons.add_circle, color: Color(0xFF4A90E2)),
         ),
       ],
     );
   }
 
-  Widget _buildSubtasksList(List<SubtaskModel>? subtasks) {
-    if (subtasks == null || subtasks.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF2A2D3E),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Text(
-          'لا توجد مهام فرعية',
-          style: TextStyle(color: Colors.grey),
-        ),
-      );
-    }
+  Widget _buildSubtasksList() {
+    return BlocBuilder<SubtasksBloc, SubtasksState>(
+      bloc: bloc,
+      builder: (context, state) {
+        if (state is SubtasksLoading) {
+          return Center(child: CircularProgressIndicator());
+        }
 
-    return Column(
-      children: subtasks.map((subtask) {
+        if (state is SubtasksLoaded) {
+          final List<SubtaskModel> subtasks = state.subtasks ?? [];
+          return Column(
+            children: subtasks.map((subtask) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2A2D3E),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: subtask.isDone,
+                      activeColor: const Color(0xFF4A90E2),
+                      onChanged: (value) {
+                        sl<SubtasksBloc>().add(ToggleSubtaskStatus(subtask.id));
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        subtask.title,
+                        style: TextStyle(
+                          color: subtask.isDone ? Colors.grey : Colors.white,
+                          decoration: subtask.isDone
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        // حذف المهمة الفرعية
+                        _removeSubtask(subtask.id);
+                      },
+                      icon: const Icon(Icons.delete, color: Colors.redAccent),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          );
+        }
+
         return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: const Color(0xFF2A2D3E),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Row(
-            children: [
-              Checkbox(
-                value: subtask.isDone,
-                activeColor: const Color(0xFF4A90E2),
-                onChanged: (value) {
-                    sl<TasksBloc>().add(ToggleSubtaskStatus(subtask.id));
-                },
-              ),
-              Expanded(
-                child: Text(
-                  subtask.title,
-                  style: TextStyle(
-                    color: subtask.isDone ? Colors.grey : Colors.white,
-                    decoration: subtask.isDone
-                        ? TextDecoration.lineThrough
-                        : null,
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  // حذف المهمة الفرعية
-                  sl<TasksBloc>().add(DeleteSubtask(subtask.id));
-                },
-                icon: const Icon(Icons.delete, color: Colors.redAccent),
-              ),
-            ],
+          child: const Text(
+            'لا توجد مهام فرعية',
+            style: TextStyle(color: Colors.grey),
           ),
         );
-      }).toList(),
+      },
     );
   }
 
@@ -373,20 +375,29 @@ class _EditTaskPageState extends State<EditTaskPage> {
           Icons.nightlight_round,
           "تأجيل",
           const Color(0xFF4A90E2),
+          () {},
         ),
-        _buildActionButton(Icons.delete, "حذف", Colors.redAccent),
+        _buildActionButton(Icons.delete, "حذف", Colors.redAccent, () {
+          sl<TasksBloc>().add(DeleteTask(widget.task.id));
+          Navigator.pop(context);
+        }),
       ],
     );
   }
 
-  Widget _buildActionButton(IconData icon, String label, Color color) {
+  Widget _buildActionButton(
+    IconData icon,
+    String label,
+    Color color,
+    void Function()? onPressed,
+  ) {
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFF2A2D3E),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      onPressed: () {},
+      onPressed: onPressed,
       icon: Icon(icon, color: color),
       label: Text(
         label,
@@ -446,18 +457,24 @@ class _EditTaskPageState extends State<EditTaskPage> {
     if (time != null) setState(() => _dueTime = time);
   }
 
-  // void _addSubtask(List<SubtaskModel>? subtasks) {
-  //   if (_subtaskController.text.isNotEmpty) {
-  //     setState(() {
-  //       subtasks?.add(_subtaskController.text);
-  //       _subtaskController.clear();
-  //     });
-  //   }
-  // }
+  void _addSubtask() {
+    if (_subtaskController.text.isNotEmpty) {
+      bloc.add(
+        AddSubtask(
+          SubtaskModel(
+            id: 0,
+            taskId: widget.task.id,
+            title: _subtaskController.text,
+          ),
+        ),
+      );
+      _subtaskController.clear();
+    }
+  }
 
-  // void _removeSubtask(int index) {
-  //   setState(() => _subtasks.removeAt(index));
-  // }
+  void _removeSubtask(int index) {
+    bloc.add(DeleteSubtask(index));
+  }
 
   void _updateTask() {
     if (_formKey.currentState!.validate()) {
@@ -478,8 +495,8 @@ class _EditTaskPageState extends State<EditTaskPage> {
         priority: _priority,
       );
 
-      sl<TasksBloc>().add(UpdateTask(updatedTask));
-      Navigator.pop(context);
+      sl<TasksBloc>().add(UpdateTask(task: updatedTask));
+      // Navigator.pop(context);
     }
   }
 }
