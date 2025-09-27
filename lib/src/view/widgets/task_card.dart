@@ -81,11 +81,17 @@ class TaskCard extends StatelessWidget {
                       Row(
                         children: [
                           // Time
-                          Icon(
-                            Icons.access_time,
-                            color: Colors.grey[400],
-                            size: 14,
-                          ),
+                          task.dueTime.isAfter(DateTime.now())
+                              ? Icon(
+                                  Icons.access_time,
+                                  color: Colors.grey[400],
+                                  size: 14,
+                                )
+                              : Icon(
+                                  Icons.done,
+                                  color: Colors.red[400],
+                                  size: 14,
+                                ),
                           const SizedBox(width: 4),
                           Text(
                             _formatTime(task.dueTime),

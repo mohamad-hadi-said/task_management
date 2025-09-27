@@ -1,10 +1,14 @@
+import 'dart:ui';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:task_management/core/theme/azkar_theme.dart';
+import 'package:task_management/injection_container.dart';
+import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 
 class NotificationService {
   static const String _channelKey = 'tasks_channel';
-  static const String _channelName = 'إشعارات المهام';
-  static const String _channelDescription = 'تنبيهات المهمة';
+  static const String _channelName = 'تذكيرات المهام';
+  static const String _channelDescription = 'إشعارات تذكير بالمهام';
 
   static Future<void> initialize() async {
     await AwesomeNotifications().initialize(
@@ -55,6 +59,18 @@ Future<void> scheduleTaskNotification(
       body: body,
       notificationLayout: NotificationLayout.Default,
     ),
+    actionButtons: [
+      NotificationActionButton(
+        key: 'DONE_TASK_$id',
+        label: 'إنجاز',
+        color: const Color(0xFF4A90E2),
+      ),
+      NotificationActionButton(
+        key: 'IGNORE_TASK_$id',
+        label: 'تجاهل',
+        color: const Color(0xFF2C2C2C),
+      ),
+    ],
     schedule: NotificationCalendar(
       year: dateTime.year,
       month: dateTime.month,
@@ -63,7 +79,7 @@ Future<void> scheduleTaskNotification(
       minute: dateTime.minute,
       second: 0,
       millisecond: 0,
-      repeats: false, 
+      repeats: false,
     ),
   );
 }
@@ -80,4 +96,21 @@ Future<void> updateTask(
 
 Future<void> cancelTaskNotification(int id) async {
   await AwesomeNotifications().cancel(id);
+}
+
+Future<void> listenToActions(receivedAction) async {
+  final key = receivedAction.buttonKeyPressed;
+  print('Key: $key');
+  if (key.startsWith('DONE_TASK_')) {
+    final id = int.tryParse(key.replaceFirst('DONE_TASK_', ''));
+    print('Task ID: $id');
+    if (id != null) {
+      sl<TasksBloc>().add(ToggleTaskStatus(id));
+    }
+  } else if (key.startsWith('IGNORE_TASK_')) {
+    final id = int.tryParse(key.replaceFirst('IGNORE_TASK_', ''));
+    if (id != null) {
+      await cancelTaskNotification(id);
+    }
+  }
 }

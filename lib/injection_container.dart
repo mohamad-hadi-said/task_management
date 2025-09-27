@@ -23,4 +23,7 @@ Future<void> configureDependencies() async {
   // Blocs
   sl.registerLazySingleton<TasksBloc>(() => TasksBloc(taskRepository: sl()));
   sl.registerFactory<SubtasksBloc>(() => SubtasksBloc(taskRepository: sl()));
+
+
+  
 }

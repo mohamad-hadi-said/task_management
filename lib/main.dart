@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:task_management/core/services/notification_service.dart';
 import 'package:task_management/core/theme/azkar_theme.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,17 @@ Future<void> main() async {
     // Initialize AdMob
     AdMobService.initialize();
 
+
+    AwesomeNotifications().setListeners(
+      onActionReceivedMethod: listenToActions,
+      onNotificationCreatedMethod: (receivedNotification) async {
+        print('Notification Created on ${DateTime.now()}');
+      },
+      onNotificationDisplayedMethod: (receivedNotification) async {},
+      onDismissActionReceivedMethod: (receivedAction) async {
+        print('Notification Dismissed on ${DateTime.now()}');
+      },
+    );
     // Run the app
     runApp(const MyApp());
   } catch (e) {

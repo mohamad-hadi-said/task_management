@@ -26,16 +26,17 @@ class CustomBottomNavigation extends StatelessWidget {
         children: [
           _buildNavItem(
             icon: Icons.check_circle,
+
             label: 'المهام',
             index: 0,
             isSelected: currentIndex == 0,
           ),
-          _buildNavItem(
-            icon: Icons.notifications,
-            label: 'الإشعارات',
-            index: 1,
-            isSelected: currentIndex == 1,
-          ),
+          // _buildNavItem(
+          //   icon: Icons.notifications,
+          //   label: 'الإشعارات',
+          //   index: 1,
+          //   isSelected: currentIndex == 1,
+          // ),
           _buildNavItem(
             icon: Icons.settings,
             label: 'الإعدادات',
@@ -74,7 +75,7 @@ class CustomBottomNavigation extends StatelessWidget {
               ),
               child: Icon(
                 icon,
-                color: isSelected ? const Color(0xFF4A90E2) : Colors.white,
+                color: isSelected ? Colors.white : const Color(0xFF4A90E2),
                 size: 20,
               ),
             ),
@@ -82,7 +83,7 @@ class CustomBottomNavigation extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? const Color(0xFF4A90E2) : Colors.grey[400],
+                color: isSelected ? Colors.grey[400] : const Color(0xFF4A90E2),
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),

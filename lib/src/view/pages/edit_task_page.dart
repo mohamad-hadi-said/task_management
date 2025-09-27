@@ -372,12 +372,12 @@ class _EditTaskPageState extends State<EditTaskPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildActionButton(
-          Icons.nightlight_round,
-          "تأجيل",
-          const Color(0xFF4A90E2),
-          () {},
-        ),
+        // _buildActionButton(
+        //   Icons.nightlight_round,
+        //   "تأجيل",
+        //   const Color(0xFF4A90E2),
+        //   () {},
+        // ),
         _buildActionButton(Icons.delete, "حذف", Colors.redAccent, () {
           sl<TasksBloc>().add(DeleteTask(widget.task.id));
           Navigator.pop(context);
