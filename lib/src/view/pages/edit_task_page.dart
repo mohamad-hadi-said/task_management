@@ -324,10 +324,11 @@ class _EditTaskPageState extends State<EditTaskPage> {
                       value: subtask.isDone,
                       activeColor: const Color(0xFF4A90E2),
                       onChanged: (value) {
-                        sl<SubtasksBloc>().add(ToggleSubtaskStatus(subtask.id));
+                        bloc.add(ToggleSubtaskStatus(subtask.id));
                       },
                     ),
                     Expanded(
+                      flex: 1,
                       child: Text(
                         subtask.title,
                         style: TextStyle(
@@ -496,7 +497,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
       );
 
       sl<TasksBloc>().add(UpdateTask(task: updatedTask));
-      // Navigator.pop(context);
+      Navigator.pop(context);
     }
   }
 }

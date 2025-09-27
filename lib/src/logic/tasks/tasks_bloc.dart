@@ -1,7 +1,5 @@
-import 'dart:math';
-
-import 'package:dartz/dartz_unsafe.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_management/core/services/notification_service.dart';
 import 'package:task_management/src/model/task_model.dart';
 import 'package:task_management/src/model/subtask_model.dart';
 import 'package:task_management/src/repositories/task_repository.dart';
@@ -108,7 +106,12 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       } else {
         await _taskRepository.createTask(event.task);
       }
-
+      scheduleTaskNotification(
+        event.task.id,
+        event.task.title,
+        event.task.note ?? 'لديك مهمة مجدولة الآن.',
+        event.task.dueTime,
+      );
       // Reload tasks
       add(LoadTasks());
     } catch (e) {
@@ -121,8 +124,12 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       // print(event.task.toJson());
 
       await _taskRepository.updateTask(event.task);
-
-
+      updateTask(
+        event.task.id,
+        event.task.title,
+        event.task.note ?? 'لديك مهمة مجدولة الآن.',
+        event.task.dueTime,
+      );
       // // Reload tasks
       add(LoadTasks());
     } catch (e) {
@@ -133,7 +140,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   Future<void> _onDeleteTask(DeleteTask event, Emitter<TasksState> emit) async {
     try {
       await _taskRepository.deleteTask(event.taskId);
-
+      cancelTaskNotification(event.taskId);
       // Reload tasks
       add(LoadTasks());
     } catch (e) {

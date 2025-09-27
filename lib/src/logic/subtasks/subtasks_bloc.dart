@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_management/src/model/task_model.dart';
 import 'package:task_management/src/model/subtask_model.dart';
 import 'package:task_management/src/repositories/task_repository.dart';
 
@@ -43,12 +42,12 @@ class SubtasksLoading extends SubtasksState {}
 class SubtasksLoaded extends SubtasksState {
   final List<SubtaskModel>? subtasks;
 
-  SubtasksLoaded({required  this.subtasks});
+  SubtasksLoaded({required this.subtasks});
 }
 
-class TasksError extends SubtasksState {
+class SubtasksError extends SubtasksState {
   final String message;
-  TasksError(this.message);
+  SubtasksError(this.message);
 }
 
 // Bloc
@@ -70,18 +69,11 @@ class SubtasksBloc extends Bloc<SubasksEvent, SubtasksState> {
     Emitter<SubtasksState> emit,
   ) async {
     try {
+      emit(SubtasksLoading());
       final subtasks = await _taskRepository.getSubtasksByTaskId(event.taskId);
-     
-      final currentState = state;
-      if (currentState is SubtasksLoaded) {
-        emit(
-          SubtasksLoaded(
-            subtasks: subtasks,
-          ),
-        );
-      }
+      emit(SubtasksLoaded(subtasks: subtasks));
     } catch (e) {
-      emit(TasksError('فشل في تحميل المهام الفرعية: ${e.toString()}'));
+      emit(SubtasksError('فشل في تحميل المهام الفرعية: ${e.toString()}'));
     }
   }
 
@@ -95,7 +87,7 @@ class SubtasksBloc extends Bloc<SubasksEvent, SubtasksState> {
       // Reload subtasks for the task
       add(LoadSubtasks(event.subtask.taskId));
     } catch (e) {
-      emit(TasksError('فشل في إضافة المهمة الفرعية: ${e.toString()}'));
+      emit(SubtasksError('فشل في إضافة المهمة الفرعية: ${e.toString()}'));
     }
   }
 
@@ -109,7 +101,7 @@ class SubtasksBloc extends Bloc<SubasksEvent, SubtasksState> {
       // Reload subtasks for the task
       add(LoadSubtasks(event.subtask.taskId));
     } catch (e) {
-      emit(TasksError('فشل في تحديث المهمة الفرعية: ${e.toString()}'));
+      emit(SubtasksError('فشل في تحديث المهمة الفرعية: ${e.toString()}'));
     }
   }
 
@@ -126,7 +118,7 @@ class SubtasksBloc extends Bloc<SubasksEvent, SubtasksState> {
         add(LoadSubtasks(subtask.taskId));
       }
     } catch (e) {
-      emit(TasksError('فشل في حذف المهمة الفرعية: ${e.toString()}'));
+      emit(SubtasksError('فشل في حذف المهمة الفرعية: ${e.toString()}'));
     }
   }
 
@@ -147,7 +139,7 @@ class SubtasksBloc extends Bloc<SubasksEvent, SubtasksState> {
         add(LoadSubtasks(subtask.taskId));
       }
     } catch (e) {
-      emit(TasksError('فشل في تغيير حالة المهمة الفرعية: ${e.toString()}'));
+      emit(SubtasksError('فشل في تغيير حالة المهمة الفرعية: ${e.toString()}'));
     }
   }
 }

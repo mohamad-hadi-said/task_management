@@ -45,7 +45,7 @@ class _TasksPageState extends State<TasksPage> {
           // Tasks list
           Expanded(
             child: BlocBuilder<TasksBloc, TasksState>(
-              bloc: context.read<TasksBloc>()..add(LoadTasks()),
+              bloc: sl<TasksBloc>()..add(LoadTasks()),
               builder: (context, state) {
                 if (state is TasksLoading) {
                   return const Center(
@@ -59,7 +59,6 @@ class _TasksPageState extends State<TasksPage> {
                   if (state.tasks.isEmpty) {
                     return _buildEmptyState();
                   }
-                  print(state.tasks.map((e) => e.title).toList());
                   return _buildTasksList(state.tasks);
                 } else if (state is TasksError) {
                   return _buildErrorState(state.message);
@@ -137,7 +136,7 @@ class _TasksPageState extends State<TasksPage> {
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
         onChanged: (value) {
-          context.read<TasksBloc>().add(SearchTasks(value));
+          sl<TasksBloc>().add(SearchTasks(value));
         },
       ),
     );
@@ -152,7 +151,7 @@ class _TasksPageState extends State<TasksPage> {
         return TaskCard(
           task: task,
           onToggleStatus: (isDone) {
-            context.read<TasksBloc>().add(ToggleTaskStatus(task.id));
+            sl<TasksBloc>().add(ToggleTaskStatus(task.id));
           },
           onTap: () {
             // Navigate to task details
@@ -212,7 +211,7 @@ class _TasksPageState extends State<TasksPage> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              context.read<TasksBloc>().add(LoadTasks());
+              sl<TasksBloc>().add(LoadTasks());
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF4A90E2),
@@ -288,7 +287,7 @@ class _TasksPageState extends State<TasksPage> {
       MaterialPageRoute(builder: (context) => const AddTaskPage()),
     ).then((_) {
       // Refresh tasks after adding new task
-      context.read<TasksBloc>().add(LoadTasks());
+      sl<TasksBloc>().add(LoadTasks());
     });
   }
 
@@ -302,7 +301,7 @@ class _TasksPageState extends State<TasksPage> {
       ),
     ).then((_) {
       // Refresh tasks after adding new task
-      context.read<TasksBloc>().add(LoadTasks());
+      sl<TasksBloc>().add(LoadTasks());
     });
   }
 
@@ -332,26 +331,3 @@ class _TasksPageState extends State<TasksPage> {
     }
   }
 }
-//  BlocConsumer(
-//                 listener: (context, state) {},
-//                 bloc: sl<TasksBloc>(),
-//                 buildWhen: (previous, current) => previous != current,
-//                 builder: (context, state) {
-//                   if (state is TasksError) {
-//                     return Center(child: Text(state.message));
-//                   }
-//                   if (state is TasksLoading) {
-//                     return Center(child: CircularProgressIndicator());
-//                   }
-//                   if (state is TasksLoaded) {
-//                     if (_subtasks.isEmpty) {
-//                       print('-------------------------');
-//                       print(state.subtasks);
-//                       print('-------------------------');
-//                       _subtasks.addAll(state.subtasks ?? []);
-//                       _buildSubtasksList();
-//                     }
-//                   }
-//                  
-//                 },
-//               ),

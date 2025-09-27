@@ -2,7 +2,6 @@ import 'package:task_management/src/repositories/task_repository.dart';
 import 'package:task_management/src/model/task_model.dart';
 import 'package:task_management/src/model/subtask_model.dart';
 import 'package:task_management/core/utils/enums.dart';
-import 'package:task_management/src/api/sample_data.dart';
 
 class DatabaseController {
   final TaskRepository _taskRepository;
