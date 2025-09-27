@@ -49,9 +49,7 @@ class _WelcomePageState extends State<WelcomePage> {
     return BlocListener<TasksBloc, TasksState>(
       bloc: bloc,
       listener: (context, state) {
-        print('------------------------');
-        print(state);
-        print('------------------------');
+
         if (state is TasksError) {
           Toast.error(context, state.message);
         }

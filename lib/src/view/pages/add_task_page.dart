@@ -437,7 +437,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
       );
 
       // Add task with subtasks
-      // print(task.toMap());
+      
       sl<TasksBloc>().add(AddTask(task, subtaskTitles: _subtasks));
 
       Navigator.pop(context);

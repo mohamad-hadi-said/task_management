@@ -121,7 +121,6 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
   Future<void> _onUpdateTask(UpdateTask event, Emitter<TasksState> emit) async {
     try {
-      // print(event.task.toJson());
 
       await _taskRepository.updateTask(event.task);
       updateTask(

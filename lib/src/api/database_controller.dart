@@ -14,7 +14,7 @@ class DatabaseController {
     try {
       // Test database connection by loading tasks
       await _taskRepository.getAllTasks();
-      print('Database initialized successfully');
+    
 
       // Add sample data if database is empty
       // await SampleData.addSampleTasks(_taskRepository);

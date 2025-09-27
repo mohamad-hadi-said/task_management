@@ -8,7 +8,7 @@ class SampleData {
       // Check if tasks already exist
       final existingTasks = await repository.getAllTasks();
       if (existingTasks.isNotEmpty) {
-        print('Sample tasks already exist');
+      
         return;
       }
 
@@ -89,7 +89,7 @@ class SampleData {
         'التمارين الأساسية',
       ]);
 
-      print('Sample tasks added successfully');
+    
     } catch (e) {
       print('Error adding sample tasks: $e');
     }

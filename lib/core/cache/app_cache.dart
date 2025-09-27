@@ -200,23 +200,6 @@ class AppCache {
     return _prefs.getInt(_userScoreKey) ?? 0;
   }
 
-  // Future<bool> saveAzkar(List<AzkarModel> azkar) async {
-  //   _checkInitialized();
-  //   return await _prefs.setStringList(_azkarKey, azkar.map((question) =>jsonEncode(question.toJson())).toList());
-  // }
-
-  // List<AzkarModel> getAzkar() {
-  //   _checkInitialized();
-  //   final azkarStringList = _prefs.getStringList(_azkarKey);
-  //   if (azkarStringList == null) return [];
-    
-  //   try {
-  //     return azkarStringList.map((questionString) => AzkarModel.fromJson(jsonDecode(questionString))).toList();
-  //   } catch (e) {
-  //     debugPrint('Error decoding azkar: $e');
-  //     return [];
-  //   }
-  // }
 
   /// Save login status to the cache
   Future<bool> saveIsLoggedIn(bool isLoggedIn) async {

@@ -100,10 +100,8 @@ Future<void> cancelTaskNotification(int id) async {
 
 Future<void> listenToActions(receivedAction) async {
   final key = receivedAction.buttonKeyPressed;
-  print('Key: $key');
   if (key.startsWith('DONE_TASK_')) {
     final id = int.tryParse(key.replaceFirst('DONE_TASK_', ''));
-    print('Task ID: $id');
     if (id != null) {
       sl<TasksBloc>().add(ToggleTaskStatus(id));
     }
