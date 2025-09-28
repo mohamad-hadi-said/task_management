@@ -1,6 +1,8 @@
 import 'package:task_management/core/utils/toast.dart';
 import 'package:task_management/injection_container.dart';
+import 'package:task_management/src/logic/tasks/tascks_state.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
+import 'package:task_management/src/logic/tasks/tasks_event.dart';
 import 'package:task_management/src/repositories/task_repository.dart';
 import 'package:task_management/src/view/widgets/dimond_background.dart';
 import 'package:flutter/material.dart';

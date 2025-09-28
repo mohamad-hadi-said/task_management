@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_management/injection_container.dart';
+import 'package:task_management/src/logic/tasks/tascks_state.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 import 'package:task_management/src/model/task_model.dart';
 import 'package:task_management/src/view/pages/edit_task_page.dart';
 import 'package:task_management/src/view/widgets/task_card.dart';
+import 'package:task_management/src/logic/tasks/tasks_event.dart';
+
 
 class TasksPage extends StatefulWidget {
   const TasksPage({Key? key}) : super(key: key);

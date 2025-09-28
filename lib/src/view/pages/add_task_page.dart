@@ -3,6 +3,7 @@ import 'package:task_management/injection_container.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 import 'package:task_management/src/model/task_model.dart';
 import 'package:task_management/core/utils/enums.dart';
+import 'package:task_management/src/logic/tasks/tasks_event.dart';
 
 class AddTaskPage extends StatefulWidget {
   const AddTaskPage({Key? key}) : super(key: key);

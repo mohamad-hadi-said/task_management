@@ -1,72 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_management/core/services/notification_service.dart';
-import 'package:task_management/src/model/task_model.dart';
-import 'package:task_management/src/model/subtask_model.dart';
+import 'package:task_management/src/logic/tasks/tascks_state.dart';
+import 'package:task_management/src/logic/tasks/tasks_event.dart';
 import 'package:task_management/src/repositories/task_repository.dart';
-import 'package:task_management/core/utils/enums.dart';
-
-// Events
-abstract class TasksEvent {}
-
-class LoadTasks extends TasksEvent {}
-
-class AddTask extends TasksEvent {
-  final TaskModel task;
-  final List<String>? subtaskTitles;
-
-  AddTask(this.task, {this.subtaskTitles});
-}
-
-class UpdateTask extends TasksEvent {
-  final TaskModel task;
-
-  UpdateTask({required this.task});
-}
-
-class DeleteTask extends TasksEvent {
-  final int taskId;
-  DeleteTask(this.taskId);
-}
-
-class ToggleTaskStatus extends TasksEvent {
-  final int taskId;
-  ToggleTaskStatus(this.taskId);
-}
-
-class SearchTasks extends TasksEvent {
-  final String query;
-  SearchTasks(this.query);
-}
-
-class FilterTasksByPriority extends TasksEvent {
-  final Priority priority;
-  FilterTasksByPriority(this.priority);
-}
-
-class FilterTasksByStatus extends TasksEvent {
-  final bool isCompleted;
-  FilterTasksByStatus(this.isCompleted);
-}
-
-// States
-abstract class TasksState {}
-
-class TasksInitial extends TasksState {}
-
-class TasksLoading extends TasksState {}
-
-class TasksLoaded extends TasksState {
-  final List<TaskModel> tasks;
-  final List<SubtaskModel>? subtasks;
-  final int? selectedTaskId;
-
-  TasksLoaded({required this.tasks, this.subtasks, this.selectedTaskId});
-}
-
-class TasksError extends TasksState {
-  final String message;
-  TasksError(this.message);
-}
 
 // Bloc
 class TasksBloc extends Bloc<TasksEvent, TasksState> {
@@ -109,7 +45,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       scheduleTaskNotification(
         event.task.id,
         event.task.title,
-        event.task.note ?? 'لديك مهمة مجدولة الآن.',
+        event.task.note,
         event.task.dueTime,
       );
       // Reload tasks
@@ -126,7 +62,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       updateTask(
         event.task.id,
         event.task.title,
-        event.task.note ?? 'لديك مهمة مجدولة الآن.',
+        event.task.note,
         event.task.dueTime,
       );
       // // Reload tasks

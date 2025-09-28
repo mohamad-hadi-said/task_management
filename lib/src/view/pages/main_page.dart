@@ -6,9 +6,10 @@ import 'package:task_management/src/view/pages/add_task_page.dart';
 import 'package:task_management/src/view/pages/settings_page.dart';
 import 'package:task_management/src/view/pages/tasks_page.dart';
 import 'package:task_management/src/view/widgets/bottom_navigation.dart';
+import 'package:task_management/src/logic/tasks/tasks_event.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({super.key});
 
   @override
   State<MainPage> createState() => _MainPageState();

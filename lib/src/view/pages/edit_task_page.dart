@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_management/injection_container.dart';
+import 'package:task_management/src/logic/subtasks/subtascks_state.dart';
 import 'package:task_management/src/logic/subtasks/subtasks_bloc.dart';
+import 'package:task_management/src/logic/subtasks/subtasks_event.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 import 'package:task_management/src/model/subtask_model.dart';
 import 'package:task_management/src/model/task_model.dart';
 import 'package:task_management/core/utils/enums.dart';
+import 'package:task_management/src/logic/tasks/tasks_event.dart';
+
 
 class EditTaskPage extends StatefulWidget {
   EditTaskPage({Key? key, required this.task}) : super(key: key);
@@ -297,7 +301,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   }
 
   Widget _buildSubtasksList() {
-    return BlocBuilder<SubtasksBloc, SubtasksState>(
+    return BlocBuilder<SubtasksBloc, SubTasksState>(
       bloc: bloc,
       builder: (context, state) {
         if (state is SubtasksLoading) {
