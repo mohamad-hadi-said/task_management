@@ -128,7 +128,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      title: 'مدير المهام',
+      title: 'وقتي أمانة',
       theme: AzkarTheme.lightTheme,
       darkTheme: AzkarTheme.darkTheme,
       themeMode: ThemeMode.light,
