@@ -145,30 +145,4 @@ class _MainPageState extends State<MainPage> {
       sl<TasksBloc>().add(LoadTasks());
     });
   }
-
-  void _handleNavigation(int index) {
-    switch (index) {
-      case 0:
-        // Already on tasks page
-        break;
-      case 1:
-        // Navigate to notifications
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('صفحة الإشعارات قريباً'),
-            backgroundColor: Color(0xFF4A90E2),
-          ),
-        );
-        break;
-      case 2:
-        // Navigate to settings
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('صفحة الإعدادات قريباً'),
-            backgroundColor: Color(0xFF4A90E2),
-          ),
-        );
-        break;
-    }
-  }
 }
