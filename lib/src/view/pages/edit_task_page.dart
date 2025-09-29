@@ -43,6 +43,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   void dispose() {
     _titleController.dispose();
     _noteController.dispose();
+     bloc.close();
     _subtaskController.dispose();
     super.dispose();
   }

@@ -16,17 +16,16 @@ class CustomBottomNavigation extends StatelessWidget {
       height: 80,
       decoration: const BoxDecoration(
         color: Color(0xFF1A1D2E),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+        border: Border(
+          top: BorderSide(color: Colors.grey, width: 0.2),
         ),
+        
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildNavItem(
-            icon: Icons.check_circle,
-
+            icon: Icons.check_circle_outline,
             label: 'المهام',
             index: 0,
             isSelected: currentIndex == 0,
@@ -38,7 +37,7 @@ class CustomBottomNavigation extends StatelessWidget {
           //   isSelected: currentIndex == 1,
           // ),
           _buildNavItem(
-            icon: Icons.settings,
+            icon: Icons.settings_outlined,
             label: 'الإعدادات',
             index: 2,
             isSelected: currentIndex == 2,
@@ -61,31 +60,18 @@ class CustomBottomNavigation extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected
-                    ? const Color(0xFF4A90E2)
-                    : Colors.transparent,
-                border: isSelected
-                    ? Border.all(color: const Color(0xFF4A90E2), width: 2)
-                    : null,
-              ),
-              child: Icon(
-                icon,
-                color: isSelected ? Colors.white : const Color(0xFF4A90E2),
-                size: 20,
-              ),
-            ),
+            Icon(
+            icon,
+            color: isSelected ? const Color(0xFF4A90E2) : Colors.white,
+            size: 28,
+          ),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? Colors.grey[400] : const Color(0xFF4A90E2),
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? const Color(0xFF4A90E2) : Colors.white,
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.normal,
               ),
             ),
           ],

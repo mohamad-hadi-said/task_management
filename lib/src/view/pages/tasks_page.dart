@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_management/injection_container.dart';
+import 'package:task_management/src/logic/cubit/search_btn_cubit.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 import 'package:task_management/src/model/task_model.dart';
+import 'package:task_management/src/view/pages/details_task_page.dart';
 import 'package:task_management/src/view/pages/edit_task_page.dart';
 import 'package:task_management/src/view/widgets/task_card.dart';
 
@@ -33,7 +35,15 @@ class _TasksPageState extends State<TasksPage> {
     return Column(
       children: [
         // Search bar
-        _buildSearchBar(),
+        BlocBuilder<SearchBtnCubit, SearchBtnState>(
+          bloc: sl<SearchBtnCubit>(),
+          builder: (context, state) {
+            if (state.isToggled) {
+              return _buildSearchBar();
+            }
+            return const SizedBox.shrink();
+          },
+        ),
 
         // Tasks list
         Expanded(
@@ -174,7 +184,7 @@ class _TasksPageState extends State<TasksPage> {
       context,
       MaterialPageRoute(
         // builder: (context) => EditTaskPage(task: task),
-        builder: (_) => EditTaskPage(task: task),
+        builder: (_) => DetailsTaskPage(task: task),
       ),
     ).then((_) {
       // Refresh tasks after adding new task

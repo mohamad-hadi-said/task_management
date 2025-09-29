@@ -17,7 +17,7 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
       decoration: BoxDecoration(
         color: const Color(0xFF2A2D3E),
         borderRadius: BorderRadius.circular(12),
@@ -42,17 +42,18 @@ class TaskCard extends StatelessWidget {
                 GestureDetector(
                   onTap: () => onToggleStatus?.call(!task.isDone),
                   child: Container(
-                    width: 24,
-                    height: 24,
+                    width: 27,
+                    height: 27,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      // shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(7),
                       border: Border.all(
-                        color: task.isDone ? _getPriorityColor() : Colors.grey,
-                        width: 2,
+                        color: task.isDone ? _getPriorityColor() : Colors.white12,
+                        width: 1,
                       ),
                       color: task.isDone
                           ? _getPriorityColor()
-                          : Colors.transparent,
+                          : Colors.grey[800]!,
                     ),
                     child: task.isDone
                         ? const Icon(Icons.check, color: Colors.white, size: 16)
@@ -80,7 +81,36 @@ class TaskCard extends StatelessWidget {
                       // Task time and priority
                       Row(
                         children: [
+                          // Priority badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 9,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _getPriorityColor(),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              _getPriorityText(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+
                           // Time
+                          Text(
+                            _formatTime(task.dueTime),
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
                           task.dueTime.isAfter(DateTime.now())
                               ? Icon(
                                   Icons.access_time,
@@ -92,35 +122,6 @@ class TaskCard extends StatelessWidget {
                                   color: Colors.red[400],
                                   size: 14,
                                 ),
-                          const SizedBox(width: 4),
-                          Text(
-                            _formatTime(task.dueTime),
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-
-                          // Priority badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getPriorityColor(),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              _getPriorityText(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ],
@@ -128,7 +129,11 @@ class TaskCard extends StatelessWidget {
                 ),
 
                 // Arrow icon
-                Icon(Icons.chevron_left, color: Colors.grey[400], size: 20),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: Colors.grey[600],
+                  size: 28,
+                ),
               ],
             ),
           ),
@@ -140,11 +145,11 @@ class TaskCard extends StatelessWidget {
   Color _getPriorityColor() {
     switch (task.priority) {
       case Priority.high:
-        return const Color(0xFFE74C3C); // Red
+        return const Color(0x88E74C3C); // Red, more transparent (~53%)
       case Priority.medium:
-        return const Color(0xFFF39C12); // Orange
+        return const Color(0x88F39C12); // Orange, more transparent (~53%)
       case Priority.low:
-        return const Color(0xFF27AE60); // Green
+        return const Color(0x8827AE60); // Green, more transparent (~53%)
     }
   }
 

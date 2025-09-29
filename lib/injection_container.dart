@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:task_management/src/logic/cubit/search_btn_cubit.dart';
 import 'package:task_management/src/logic/subtasks/subtasks_bloc.dart';
 import 'package:task_management/src/repositories/task_repository.dart';
 import 'package:task_management/src/api/database_helper.dart';
@@ -24,6 +25,5 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<TasksBloc>(() => TasksBloc(taskRepository: sl()));
   sl.registerFactory<SubtasksBloc>(() => SubtasksBloc(taskRepository: sl()));
 
-
-  
+  sl.registerLazySingleton(() => SearchBtnCubit());
 }
