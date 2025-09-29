@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_management/injection_container.dart';
+import 'package:task_management/src/logic/subtasks/subtascks_state.dart';
 import 'package:task_management/src/logic/subtasks/subtasks_bloc.dart';
+import 'package:task_management/src/logic/subtasks/subtasks_event.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
+import 'package:task_management/src/logic/tasks/tasks_event.dart';
 import 'package:task_management/src/model/subtask_model.dart';
 import 'package:task_management/src/model/task_model.dart';
 import 'package:task_management/src/view/pages/edit_task_page.dart';
@@ -224,7 +227,7 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                       _actionButton(
                         Icons.edit,
                         'تعديل',
-                        const Color(0xFF1A1D2E),
+                        const Color(0xFF111720),
                         () {
                           Navigator.push(
                             context,
@@ -241,7 +244,7 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                       _actionButton(
                         Icons.delete,
                         'حذف',
-                        const Color(0xFF1A1D2E),
+                        const Color(0xFF111720),
                         () {
                           sl<TasksBloc>().add(DeleteTask(widget.task.id));
                           Navigator.of(context).pop();
@@ -250,7 +253,7 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                       _actionButton(
                         Icons.nightlight_round,
                         'تأجيل',
-                        const Color(0xFF1A1D2E),
+                        const Color(0xFF111720),
                         () {
                           Navigator.push(
                             context,
@@ -276,7 +279,7 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
   }
 
   Widget _buildSubtasksList() {
-    return BlocBuilder<SubtasksBloc, SubtasksState>(
+    return BlocBuilder<SubtasksBloc, SubTasksState>(
       bloc: bloc,
       builder: (context, state) {
         if (state is SubtasksLoading) {
@@ -341,10 +344,16 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
         margin: const EdgeInsets.symmetric(horizontal: 6),
         decoration: BoxDecoration(
           color: const Color(0xFF111720),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: TextButton.icon(
           onPressed: onPressed,
+          style: TextButton.styleFrom(
+            backgroundColor: bg,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
           icon: Icon(icon, color: Colors.white70),
           label: Text(label, style: const TextStyle(color: Colors.white70)),
         ),
