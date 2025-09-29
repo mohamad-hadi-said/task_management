@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:task_management/core/utils/enums.dart';
 import 'package:task_management/injection_container.dart';
+import 'package:task_management/src/logic/cubit/search_btn_cubit.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 import 'package:task_management/src/view/pages/add_task_page.dart';
 import 'package:task_management/src/view/pages/settings_page.dart';
@@ -23,12 +24,16 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1D2E),
       appBar: _buildAppBar(),
-      body: IndexedStack(
-        index: _currentIndex.clamp(0, 2 - 1),
-        children: [
-          TasksPage(),
-          SettingsPage(), // Placeholder for Notifications Page
-        ],
+      
+      body: Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: IndexedStack(
+          index: _currentIndex.clamp(0, 2 - 1),
+          children: [
+            TasksPage(),
+            SettingsPage(), // Placeholder for Notifications Page
+          ],
+        ),
       ),
       bottomNavigationBar: CustomBottomNavigation(
         currentIndex: _currentIndex,
@@ -40,16 +45,18 @@ class _MainPageState extends State<MainPage> {
           // _handleNavigation(index);
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToAddTask(context),
-        backgroundColor: const Color(0xFF4A90E2),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(10),
+        child: Container(),
+      ),
+      shape: const Border(
+        bottom: BorderSide(color: Colors.white, width: 0.2),
+      ),
       backgroundColor: const Color(0xFF1A1D2E),
       elevation: 0,
       title: const Text(
@@ -61,12 +68,22 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
       centerTitle: true,
+      leading: Container(
+        margin: const EdgeInsets.symmetric(vertical: 7.5, horizontal: 2.0),
+        decoration: BoxDecoration(
+          color: const Color(0xFF4A90E2),
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: IconButton(
+          onPressed: () => _navigateToAddTask(context),
+          icon: const Icon(Icons.add, color: Colors.white),
+        ),
+      ),
       actions: [
         // Search icon
         IconButton(
           onPressed: () {
-            // Focus on search field
-            FocusScope.of(context).requestFocus(FocusNode());
+           sl<SearchBtnCubit>().toggle();
           },
           icon: const Icon(Icons.search, color: Colors.white),
         ),
