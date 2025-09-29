@@ -4,6 +4,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:task_management/core/theme/azkar_theme.dart';
 import 'package:task_management/injection_container.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
+import 'package:task_management/src/logic/tasks/tasks_event.dart';
 
 class NotificationService {
   static const String _channelKey = 'tasks_channel';
