@@ -92,73 +92,83 @@ class TaskCard extends StatelessWidget {
 
                       // Task status & priority badges
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // Status badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getStatusBgColor(),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: _getStatusBorderColor(),
-                                width: 1,
-                              ),
-                            ),
-                            child: Text(
-                              task.status.arabicTitle,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-
-                          // Priority badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getPriorityColor(),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              _getPriorityText(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-
-                          // Time
-                          Text(
-                            _formatTime(task.dueTime),
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          task.dueTime.isAfter(DateTime.now())
-                              ? Icon(
-                                  Icons.access_time,
-                                  color: Colors.grey[400],
-                                  size: 14,
-                                )
-                              : Icon(
-                                  Icons.done,
-                                  color: Colors.red[400],
-                                  size: 14,
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
                                 ),
+                                decoration: BoxDecoration(
+                                  color: _getStatusBgColor(),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: _getStatusBorderColor(),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  task.status.arabicTitle,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+
+                              // Priority badge
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _getPriorityColor(),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  _getPriorityText(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              task.dueTime.isAfter(DateTime.now())
+                                  ? Icon(
+                                      Icons.access_time,
+                                      color: Colors.grey[400],
+                                      size: 14,
+                                    )
+                                  : Icon(
+                                      Icons.error_outline_rounded,
+                                      color: Colors.red[400],
+                                      size: 14,
+                                    ),
+                              const SizedBox(width: 5),
+                              // Time
+                              Text(
+                                _formatTime(task.dueTime),
+                                style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ],

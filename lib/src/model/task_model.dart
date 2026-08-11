@@ -13,19 +13,14 @@ class TaskModel {
   final TaskStatus status;
   final Priority priority;
 
-  bool get isDone => status == TaskStatus.done;
-
   TaskModel({
     required this.id,
     required this.title,
     required this.note,
     required this.dueTime,
-    TaskStatus status = TaskStatus.todo,
-    bool? isDone,
+    this.status = TaskStatus.todo,
     this.priority = Priority.medium,
-  }) : status = status != TaskStatus.todo
-            ? status
-            : (isDone == true ? TaskStatus.done : status);
+  });
 
   Map<String, dynamic> toJson() => _$TaskModelToJson(this);
 
@@ -40,24 +35,17 @@ class TaskModel {
       'note': note,
       'due_time': dueTime.toIso8601String(),
       'status': status.index,
-      'is_done': isDone ? 1 : 0,
       'priority': priority.index,
     };
   }
 
   factory TaskModel.fromMap(Map<String, dynamic> map) {
-    TaskStatus taskStatus;
+    TaskStatus taskStatus = TaskStatus.todo;
     if (map['status'] != null) {
       final statusIdx = map['status'] as int;
       if (statusIdx >= 0 && statusIdx < TaskStatus.values.length) {
         taskStatus = TaskStatus.values[statusIdx];
-      } else {
-        taskStatus = TaskStatus.todo;
       }
-    } else if (map['is_done'] != null) {
-      taskStatus = map['is_done'] == 1 ? TaskStatus.done : TaskStatus.todo;
-    } else {
-      taskStatus = TaskStatus.todo;
     }
 
     return TaskModel(

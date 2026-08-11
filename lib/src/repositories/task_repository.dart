@@ -153,7 +153,7 @@ class TaskRepository {
     final allTasks = await getAllTasks();
 
     return allTasks
-        .where((task) => !task.isDone && task.dueTime.isBefore(now))
+        .where((task) => task.status != TaskStatus.done && task.dueTime.isBefore(now))
         .toList();
   }
 

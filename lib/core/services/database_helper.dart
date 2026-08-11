@@ -36,7 +36,6 @@ class DatabaseHelper {
         note TEXT NOT NULL,
         due_time TEXT NOT NULL,
         status INTEGER NOT NULL DEFAULT 0,
-        is_done INTEGER NOT NULL DEFAULT 0,
         priority INTEGER NOT NULL DEFAULT 1
       )
     ''');
@@ -55,7 +54,6 @@ class DatabaseHelper {
     // Create indexes for better performance
     await db.execute('CREATE INDEX idx_tasks_due_time ON tasks(due_time)');
     await db.execute('CREATE INDEX idx_tasks_status ON tasks(status)');
-    await db.execute('CREATE INDEX idx_tasks_is_done ON tasks(is_done)');
     await db.execute('CREATE INDEX idx_subtasks_task_id ON subtasks(task_id)');
     await db.execute('CREATE INDEX idx_subtasks_is_done ON subtasks(is_done)');
   }
@@ -155,8 +153,8 @@ class DatabaseHelper {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
       'tasks',
-      where: 'status = ? OR is_done = ?',
-      whereArgs: [TaskStatus.done.index, 1],
+      where: 'status = ?',
+      whereArgs: [TaskStatus.done.index],
       orderBy: 'due_time DESC',
     );
 
@@ -169,8 +167,8 @@ class DatabaseHelper {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
       'tasks',
-      where: 'status != ? AND is_done = ?',
-      whereArgs: [TaskStatus.done.index, 0],
+      where: 'status != ?',
+      whereArgs: [TaskStatus.done.index],
       orderBy: 'due_time ASC',
     );
 

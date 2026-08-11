@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:task_management/core/utils/enums.dart';
 import 'package:task_management/injection_container.dart';
 import 'package:task_management/src/logic/cubit/search_btn_cubit.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
@@ -64,8 +63,9 @@ class _MainPageState extends State<MainPage> {
         'مهامي',
         style: TextStyle(
           color: Colors.white,
-          fontSize: 24,
+          fontSize: 20,
           fontWeight: FontWeight.bold,
+          fontFamily: 'Cairo',
         ),
       ),
       centerTitle: true,
@@ -78,64 +78,6 @@ class _MainPageState extends State<MainPage> {
           icon: const Icon(Icons.search, color: Colors.white),
         ),
       ],
-    );
-  }
-
-  void _showFilterDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF2A2D3E),
-        title: const Text(
-          'تصفية المهام',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: const Text(
-                'جميع المهام',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                sl<TasksBloc>().add(LoadTasks());
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'المهام المكتملة',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                sl<TasksBloc>().add(FilterTasksByStatus(true));
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'المهام المعلقة',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                sl<TasksBloc>().add(FilterTasksByStatus(false));
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'أولوية عالية',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                sl<TasksBloc>().add(FilterTasksByPriority(Priority.high));
-              },
-            ),
-          ],
-        ),
-      ),
     );
   }
 

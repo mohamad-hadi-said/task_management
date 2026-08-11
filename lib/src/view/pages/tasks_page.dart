@@ -101,10 +101,26 @@ class _TasksPageState extends State<TasksPage> {
 
   Widget _buildStatusTabBar() {
     final tabs = [
-      {'title': 'الكل', 'icon': Icons.list_alt_rounded, 'color': const Color(0xFF4A90E2)},
-      {'title': 'يجب إنجازه', 'icon': Icons.radio_button_unchecked, 'color': const Color(0xFF4A90E2)},
-      {'title': 'قيد العمل', 'icon': Icons.sync, 'color': const Color(0xFFF39C12)},
-      {'title': 'تم إنجازها', 'icon': Icons.check_circle_outline, 'color': const Color(0xFF27AE60)},
+      {
+        'title': 'الكل',
+        'icon': Icons.list_alt_rounded,
+        'color': const Color(0xFF4A90E2),
+      },
+      {
+        'title': 'يجب إنجازه',
+        'icon': Icons.radio_button_unchecked,
+        'color': const Color(0xFF4A90E2),
+      },
+      {
+        'title': 'قيد العمل',
+        'icon': Icons.sync,
+        'color': const Color(0xFFF39C12),
+      },
+      {
+        'title': 'تم إنجازها',
+        'icon': Icons.check_circle_outline,
+        'color': const Color(0xFF27AE60),
+      },
     ];
 
     return Container(
@@ -138,7 +154,7 @@ class _TasksPageState extends State<TasksPage> {
                           color: accentColor.withOpacity(0.35),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
-                        )
+                        ),
                       ]
                     : null,
                 border: Border.all(
@@ -160,7 +176,9 @@ class _TasksPageState extends State<TasksPage> {
                     style: TextStyle(
                       color: isSelected ? Colors.white : Colors.grey[300],
                       fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w500,
                     ),
                   ),
                 ],
@@ -188,6 +206,7 @@ class _TasksPageState extends State<TasksPage> {
           prefixIcon: Icon(Icons.search, color: Colors.grey),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          fillColor: Colors.transparent,
         ),
         onChanged: (value) {
           sl<TasksBloc>().add(SearchTasks(value));
@@ -280,9 +299,7 @@ class _TasksPageState extends State<TasksPage> {
   void _navigateToTaskDetails(TaskModel task) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => DetailsTaskPage(task: task),
-      ),
+      MaterialPageRoute(builder: (_) => DetailsTaskPage(task: task)),
     ).then((_) {
       _loadTasksForCurrentTab();
     });
