@@ -109,7 +109,7 @@ class _TasksPageState extends State<TasksPage> {
         final task = tasks[index];
         return TaskCard(
           task: task,
-          onToggleStatus: (isDone) {
+          onToggleStatus: () {
             sl<TasksBloc>().add(ToggleTaskStatus(task.id));
           },
           onTap: () {

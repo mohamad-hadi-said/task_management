@@ -30,7 +30,7 @@ class DatabaseController {
       title: 'مهمة تجريبية',
       note: 'هذه مهمة تجريبية لاختبار قاعدة البيانات',
       dueTime: DateTime.now().add(const Duration(days: 1)),
-      isDone: false,
+      status: TaskStatus.todo,
       priority: Priority.high,
     );
 

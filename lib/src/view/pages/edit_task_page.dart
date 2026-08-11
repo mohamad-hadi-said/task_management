@@ -27,6 +27,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   late DateTime _dueDate;
   late TimeOfDay _dueTime;
   late Priority _priority;
+  late TaskStatus _status;
   late SubtasksBloc bloc;
   final _subtaskController = TextEditingController();
 
@@ -39,6 +40,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     _dueDate = widget.task.dueTime;
     _dueTime = TimeOfDay.fromDateTime(widget.task.dueTime);
     _priority = widget.task.priority;
+    _status = widget.task.status;
 
     bloc = sl<SubtasksBloc>()..add(LoadSubtasks(widget.task.id));
   }
@@ -139,6 +141,11 @@ class _EditTaskPageState extends State<EditTaskPage> {
               _buildSectionTitle('الأولوية'),
               const SizedBox(height: 8),
               _buildPrioritySelector(),
+              const SizedBox(height: 24),
+
+              _buildSectionTitle('حالة المهمة'),
+              const SizedBox(height: 8),
+              _buildStatusSelector(),
               const SizedBox(height: 24),
 
               const SizedBox(height: 8),
@@ -478,6 +485,57 @@ class _EditTaskPageState extends State<EditTaskPage> {
     }
   }
 
+  Widget _buildStatusSelector() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildStatusOption(
+            TaskStatus.todo,
+            const Color(0xFF4A90E2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildStatusOption(
+            TaskStatus.inProgress,
+            const Color(0xFFF39C12),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildStatusOption(
+            TaskStatus.done,
+            const Color(0xFF27AE60),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusOption(TaskStatus status, Color color) {
+    final isSelected = _status == status;
+    return GestureDetector(
+      onTap: () => setState(() => _status = status),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? color : const Color(0xFF2A2D3E),
+          borderRadius: BorderRadius.circular(12),
+          border: isSelected ? null : Border.all(color: Colors.grey.withOpacity(0.5)),
+        ),
+        child: Text(
+          status.arabicTitle,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.grey,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _removeSubtask(int index) {
     bloc.add(DeleteSubtask(index));
   }
@@ -497,7 +555,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
         title: _titleController.text,
         note: _noteController.text,
         dueTime: dueDateTime,
-        isDone: widget.task.isDone,
+        status: _status,
         priority: _priority,
       );
 

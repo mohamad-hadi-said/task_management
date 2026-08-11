@@ -23,6 +23,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     minute: TimeOfDay.now().minute,
   );
   Priority _priority = Priority.medium;
+  TaskStatus _status = TaskStatus.todo;
 
   final List<String> _subtasks = [];
   final _subtaskController = TextEditingController();
@@ -129,6 +130,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
               _buildSectionTitle('الأولوية'),
               const SizedBox(height: 8),
               _buildPrioritySelector(),
+              const SizedBox(height: 24),
+
+              // Task Status
+              _buildSectionTitle('حالة المهمة'),
+              const SizedBox(height: 8),
+              _buildStatusSelector(),
               const SizedBox(height: 24),
 
               // Subtasks
@@ -418,6 +425,60 @@ class _AddTaskPageState extends State<AddTaskPage> {
     });
   }
 
+  Widget _buildStatusSelector() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildStatusOption(
+            status: TaskStatus.todo,
+            color: const Color(0xFF4A90E2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildStatusOption(
+            status: TaskStatus.inProgress,
+            color: const Color(0xFFF39C12),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildStatusOption(
+            status: TaskStatus.done,
+            color: const Color(0xFF27AE60),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusOption({
+    required TaskStatus status,
+    required Color color,
+  }) {
+    final isSelected = _status == status;
+    return GestureDetector(
+      onTap: () => setState(() => _status = status),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? color : const Color(0xFF2A2D3E),
+          borderRadius: BorderRadius.circular(12),
+          border: isSelected ? null : Border.all(color: Colors.grey.withOpacity(0.5)),
+        ),
+        child: Text(
+          status.arabicTitle,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.grey,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _saveTask() {
     if (_formKey.currentState!.validate()) {
       final dueDateTime = DateTime(
@@ -433,7 +494,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         title: _titleController.text,
         note: _noteController.text,
         dueTime: dueDateTime,
-        isDone: false,
+        status: _status,
         priority: _priority,
       );
 

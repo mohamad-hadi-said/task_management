@@ -28,21 +28,27 @@ class _MainPageState extends State<MainPage> {
       body: Container(
         margin: const EdgeInsets.only(top: 10),
         child: IndexedStack(
-          index: _currentIndex.clamp(0, 2 - 1),
-          children: [
+          index: _currentIndex.clamp(0, 1),
+          children: const [
             TasksPage(),
-            SettingsPage(), // Placeholder for Notifications Page
+            SettingsPage(),
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToAddTask(context),
+        backgroundColor: const Color(0xFF4A90E2),
+        elevation: 6,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, color: Colors.white, size: 30),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: CustomBottomNavigation(
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
-          // // Handle navigation to other pages
-          // _handleNavigation(index);
         },
       ),
     );
@@ -68,17 +74,6 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
       centerTitle: true,
-      leading: Container(
-        margin: const EdgeInsets.symmetric(vertical: 7.5, horizontal: 2.0),
-        decoration: BoxDecoration(
-          color: const Color(0xFF4A90E2),
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        child: IconButton(
-          onPressed: () => _navigateToAddTask(context),
-          icon: const Icon(Icons.add, color: Colors.white),
-        ),
-      ),
       actions: [
         // Search icon
         IconButton(

@@ -5,7 +5,7 @@ import 'package:task_management/core/utils/enums.dart';
 class TaskCard extends StatelessWidget {
   final TaskModel task;
   final VoidCallback? onTap;
-  final ValueChanged<bool>? onToggleStatus;
+  final VoidCallback? onToggleStatus;
 
   const TaskCard({
     Key? key,
@@ -38,26 +38,25 @@ class TaskCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Checkbox
+                // Status icon toggle
                 GestureDetector(
-                  onTap: () => onToggleStatus?.call(!task.isDone),
+                  onTap: onToggleStatus,
                   child: Container(
-                    width: 27,
-                    height: 27,
+                    width: 32,
+                    height: 32,
                     decoration: BoxDecoration(
-                      // shape: BoxShape.circle,
-                      borderRadius: BorderRadius.circular(7),
+                      borderRadius: BorderRadius.circular(8),
+                      color: _getStatusBgColor(),
                       border: Border.all(
-                        color: task.isDone ? _getPriorityColor() : Colors.white12,
-                        width: 1,
+                        color: _getStatusBorderColor(),
+                        width: 1.5,
                       ),
-                      color: task.isDone
-                          ? _getPriorityColor()
-                          : Colors.grey[800]!,
                     ),
-                    child: task.isDone
-                        ? const Icon(Icons.check, color: Colors.white, size: 16)
-                        : null,
+                    child: Icon(
+                      _getStatusIcon(),
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -70,32 +69,57 @@ class TaskCard extends StatelessWidget {
                       // Task title
                       Text(
                         task.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
+                          decoration: task.isDone
+                              ? TextDecoration.lineThrough
+                              : null,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
 
-                      // Task time and priority
+                      // Task status & priority badges
                       Row(
                         children: [
+                          // Status badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _getStatusBgColor(),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: _getStatusBorderColor(), width: 1),
+                            ),
+                            child: Text(
+                              task.status.arabicTitle,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+
                           // Priority badge
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 9,
-                              vertical: 5,
+                              horizontal: 8,
+                              vertical: 4,
                             ),
                             decoration: BoxDecoration(
                               color: _getPriorityColor(),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               _getPriorityText(),
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 12,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -142,6 +166,39 @@ class TaskCard extends StatelessWidget {
     );
   }
 
+  IconData _getStatusIcon() {
+    switch (task.status) {
+      case TaskStatus.todo:
+        return Icons.radio_button_unchecked;
+      case TaskStatus.inProgress:
+        return Icons.sync;
+      case TaskStatus.done:
+        return Icons.check;
+    }
+  }
+
+  Color _getStatusBgColor() {
+    switch (task.status) {
+      case TaskStatus.todo:
+        return const Color(0x554A90E2);
+      case TaskStatus.inProgress:
+        return const Color(0x66F39C12);
+      case TaskStatus.done:
+        return const Color(0x6627AE60);
+    }
+  }
+
+  Color _getStatusBorderColor() {
+    switch (task.status) {
+      case TaskStatus.todo:
+        return const Color(0xFF4A90E2);
+      case TaskStatus.inProgress:
+        return const Color(0xFFF39C12);
+      case TaskStatus.done:
+        return const Color(0xFF27AE60);
+    }
+  }
+
   Color _getPriorityColor() {
     switch (task.priority) {
       case Priority.high:
@@ -174,3 +231,4 @@ class TaskCard extends StatelessWidget {
     return '$displayHour:$displayMinute $period';
   }
 }
+

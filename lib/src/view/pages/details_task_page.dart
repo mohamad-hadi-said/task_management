@@ -6,6 +6,7 @@ import 'package:task_management/src/logic/subtasks/subtasks_bloc.dart';
 import 'package:task_management/src/logic/subtasks/subtasks_event.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 import 'package:task_management/src/logic/tasks/tasks_event.dart';
+import 'package:task_management/core/utils/enums.dart';
 import 'package:task_management/src/model/subtask_model.dart';
 import 'package:task_management/src/model/task_model.dart';
 import 'package:task_management/src/view/pages/edit_task_page.dart';
@@ -166,28 +167,48 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                       horizontal: 12,
                       vertical: 14,
                     ),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       border: Border(top: BorderSide(color: Colors.white12)),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        widget.task.isDone
-                            ? Text(
-                                'مكتملة',
-                                style: TextStyle(
-                                  color: Color(0xFF19C37B),
-                                  fontWeight: FontWeight.bold,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _getStatusColor(widget.task.status).withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: _getStatusColor(widget.task.status),
                                 ),
-                              )
-                            : Text(
-                                'غير مكتملة',
+                              ),
+                              child: Text(
+                                widget.task.status.arabicTitle,
                                 style: TextStyle(
-                                  color: Color(0xFFFF5C5C),
+                                  color: _getStatusColor(widget.task.status),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                        Text('الحالة', style: TextStyle(color: Colors.white54)),
+                            ),
+                            const Text('الحالة الحالية', style: TextStyle(color: Colors.white54)),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            _statusChip(TaskStatus.todo, 'يجب إنجازه', const Color(0xFF4A90E2)),
+                            const SizedBox(width: 8),
+                            _statusChip(TaskStatus.inProgress, 'قيد العمل', const Color(0xFFF39C12)),
+                            const SizedBox(width: 8),
+                            _statusChip(TaskStatus.done, 'تم إنجازها', const Color(0xFF27AE60)),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -356,6 +377,48 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
           ),
           icon: Icon(icon, color: Colors.white70),
           label: Text(label, style: const TextStyle(color: Colors.white70)),
+        ),
+      ),
+    );
+  }
+
+  Color _getStatusColor(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.todo:
+        return const Color(0xFF4A90E2);
+      case TaskStatus.inProgress:
+        return const Color(0xFFF39C12);
+      case TaskStatus.done:
+        return const Color(0xFF27AE60);
+    }
+  }
+
+  Widget _statusChip(TaskStatus status, String label, Color color) {
+    final isSelected = widget.task.status == status;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          sl<TasksBloc>().add(ChangeTaskStatus(widget.task.id, status));
+          setState(() {
+            // Instant feedback
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? color : const Color(0xFF2A2D3E),
+            borderRadius: BorderRadius.circular(8),
+            border: isSelected ? null : Border.all(color: Colors.white24),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.white70,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );

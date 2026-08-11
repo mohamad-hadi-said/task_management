@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_management/core/services/notification_service.dart';
+import 'package:task_management/core/utils/enums.dart';
 import 'package:task_management/src/logic/tasks/tascks_state.dart';
 import 'package:task_management/src/logic/tasks/tasks_event.dart';
 import 'package:task_management/src/repositories/task_repository.dart';
@@ -16,9 +17,11 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<UpdateTask>(_onUpdateTask);
     on<DeleteTask>(_onDeleteTask);
     on<ToggleTaskStatus>(_onToggleTaskStatus);
+    on<ChangeTaskStatus>(_onChangeTaskStatus);
     on<SearchTasks>(_onSearchTasks);
     on<FilterTasksByPriority>(_onFilterTasksByPriority);
     on<FilterTasksByStatus>(_onFilterTasksByStatus);
+    on<FilterTasksBySpecificStatus>(_onFilterTasksBySpecificStatus);
   }
 
   Future<void> _onLoadTasks(LoadTasks event, Emitter<TasksState> emit) async {
@@ -90,15 +93,35 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     try {
       final task = await _taskRepository.getTaskById(event.taskId);
       if (task != null) {
-        if (task.isDone) {
-          await _taskRepository.markTaskAsPending(event.taskId);
-        } else {
-          await _taskRepository.markTaskAsCompleted(event.taskId);
+        TaskStatus nextStatus;
+        switch (task.status) {
+          case TaskStatus.todo:
+            nextStatus = TaskStatus.inProgress;
+            break;
+          case TaskStatus.inProgress:
+            nextStatus = TaskStatus.done;
+            break;
+          case TaskStatus.done:
+            nextStatus = TaskStatus.todo;
+            break;
         }
+        await _taskRepository.updateTaskStatus(event.taskId, nextStatus);
 
         // Reload tasks
         add(LoadTasks());
       }
+    } catch (e) {
+      emit(TasksError('فشل في تغيير حالة المهمة: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onChangeTaskStatus(
+    ChangeTaskStatus event,
+    Emitter<TasksState> emit,
+  ) async {
+    try {
+      await _taskRepository.updateTaskStatus(event.taskId, event.status);
+      add(LoadTasks());
     } catch (e) {
       emit(TasksError('فشل في تغيير حالة المهمة: ${e.toString()}'));
     }
@@ -145,4 +168,17 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       emit(TasksError('فشل في تصفية المهام: ${e.toString()}'));
     }
   }
+
+  Future<void> _onFilterTasksBySpecificStatus(
+    FilterTasksBySpecificStatus event,
+    Emitter<TasksState> emit,
+  ) async {
+    try {
+      final tasks = await _taskRepository.getTasksByStatus(event.status);
+      emit(TasksLoaded(tasks: tasks));
+    } catch (e) {
+      emit(TasksError('فشل في تصفية المهام: ${e.toString()}'));
+    }
+  }
 }
+
