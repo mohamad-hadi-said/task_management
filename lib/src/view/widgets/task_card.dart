@@ -16,18 +16,24 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final cardBgColor = theme.cardTheme.color ?? theme.colorScheme.surface;
+    final textColor = theme.colorScheme.onSurface;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2D3E),
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
+        border: isDark ? null : Border.all(color: Colors.black.withValues(alpha: 0.06)),
       ),
       child: Material(
         color: Colors.transparent,
@@ -70,7 +76,7 @@ class TaskCard extends StatelessWidget {
                       Text(
                         task.title,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: textColor,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -83,7 +89,7 @@ class TaskCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: Colors.grey.shade100,
+                            color: textColor.withValues(alpha: 0.7),
                             fontSize: 12,
                           ),
                         ),

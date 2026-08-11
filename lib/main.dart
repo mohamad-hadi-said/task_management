@@ -6,6 +6,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:task_management/core/cache/app_cache.dart';
 import 'package:task_management/core/theme/app_text_theme.dart';
 import 'package:task_management/src/api/database_controller.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_management/src/logic/cubit/theme_cubit.dart';
 import 'src/view/pages/main_page.dart';
 import 'injection_container.dart' as di;
 
@@ -48,7 +50,7 @@ Future<void> main() async {
         darkTheme: AzkarTheme.darkTheme,
         themeMode: ThemeMode.dark,
         home: Scaffold(
-          backgroundColor: AzkarTheme.primaryBackground,
+          backgroundColor: AzkarTheme.darkBackground,
           body: Center(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -79,7 +81,7 @@ Future<void> main() async {
                       main();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AzkarTheme.accentColor,
+                      backgroundColor: AzkarTheme.primaryColor,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32,
                         vertical: 16,
@@ -115,33 +117,38 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      debugShowCheckedModeBanner: false,
-      title: 'وقتي أمانة',
-      theme: AzkarTheme.lightTheme,
-      darkTheme: AzkarTheme.darkTheme,
-      themeMode: ThemeMode.light,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('ar', 'SY'), // Arabic Syria
-        Locale('ar', ''), // Arabic
-      ],
-      locale: const Locale('ar', 'SY'),
-      home: const _AppLifecycleWrapper(child: MainPage()),
-      builder: (context, child) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: TextScaler.linear(1.0), // Prevent text scaling
-            ),
-            child: child!,
-          ),
+    return BlocBuilder<ThemeCubit, ThemeMode>(
+      bloc: di.sl<ThemeCubit>(),
+      builder: (context, themeMode) {
+        return MaterialApp(
+          navigatorKey: navigatorKey,
+          debugShowCheckedModeBanner: false,
+          title: 'وقتي أمانة',
+          theme: AzkarTheme.lightTheme,
+          darkTheme: AzkarTheme.darkTheme,
+          themeMode: themeMode,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('ar', 'SY'), // Arabic Syria
+            Locale('ar', ''), // Arabic
+          ],
+          locale: const Locale('ar', 'SY'),
+          home: const _AppLifecycleWrapper(child: MainPage()),
+          builder: (context, child) {
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(1.0), // Prevent text scaling
+                ),
+                child: child!,
+              ),
+            );
+          },
         );
       },
     );

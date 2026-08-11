@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:task_management/core/utils/toast.dart';
+import 'package:task_management/injection_container.dart';
+import 'package:task_management/src/logic/cubit/theme_cubit.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -12,7 +14,14 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   bool notificationsEnabled = true;
   String selectedLanguage = "العربية";
-  String selectedTheme = "داكن";
+  late String selectedTheme;
+
+  @override
+  void initState() {
+    super.initState();
+    final currentMode = sl<ThemeCubit>().state;
+    selectedTheme = currentMode == ThemeMode.dark ? "داكن" : "فاتح";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,19 +138,20 @@ class _SettingsPageState extends State<SettingsPage> {
 
   /// Header Profile / Overview Card
   Widget _buildHeaderCard() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [const Color(0xFF2A2D3E), const Color(0xFF1E2132)],
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-        ),
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -176,21 +186,21 @@ class _SettingsPageState extends State<SettingsPage> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   "إعدادات التطبيق",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: theme.colorScheme.onSurface,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Cairo',
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   "تخصص مظهر التطبيق والإشعارات والخيارات العامة",
                   style: TextStyle(
-                    color: Colors.grey,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     fontSize: 12,
                     height: 1.3,
                   ),
@@ -205,14 +215,15 @@ class _SettingsPageState extends State<SettingsPage> {
 
   /// Section Header Title
   Widget _buildSectionTitle(String title, IconData icon) {
+    final theme = Theme.of(context);
     return Row(
       children: [
         Icon(icon, size: 18, color: const Color(0xFF4A90E2)),
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(
-            color: Colors.white70,
+          style: TextStyle(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
             fontSize: 14,
             fontWeight: FontWeight.bold,
             fontFamily: 'Cairo',
@@ -224,14 +235,19 @@ class _SettingsPageState extends State<SettingsPage> {
 
   /// Wrapper container for grouped settings tiles
   Widget _buildCardGroup(List<Widget> children) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2D3E),
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.04),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -250,6 +266,7 @@ class _SettingsPageState extends State<SettingsPage> {
     required Widget trailing,
     VoidCallback? onTap,
   }) {
+    final theme = Theme.of(context);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -276,8 +293,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Cairo',
@@ -286,7 +303,10 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -302,12 +322,17 @@ class _SettingsPageState extends State<SettingsPage> {
 
   /// Badge displaying current selection with arrow indicator
   Widget _buildValueBadge(String value) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1D2E),
+        color: isDark ? const Color(0xFF1A1D2E) : const Color(0xFFF0F4F8),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white12),
+        border: Border.all(
+          color: isDark ? Colors.white12 : Colors.black.withValues(alpha: 0.08),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -321,10 +346,10 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           const SizedBox(width: 6),
-          const Icon(
+          Icon(
             Icons.arrow_forward_ios_outlined,
             size: 12,
-            color: Colors.grey,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ],
       ),
@@ -361,6 +386,8 @@ class _SettingsPageState extends State<SettingsPage> {
       options: ["داكن", "فاتح"],
       selectedValue: selectedTheme,
       onSelect: (val) {
+        final newMode = val == "داكن" ? ThemeMode.dark : ThemeMode.light;
+        sl<ThemeCubit>().setThemeMode(newMode);
         setState(() {
           selectedTheme = val;
         });
@@ -376,16 +403,21 @@ class _SettingsPageState extends State<SettingsPage> {
     required String selectedValue,
     required Function(String) onSelect,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     showDialog(
       context: context,
       builder: (context) {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Dialog(
-            backgroundColor: const Color(0xFF2A2D3E),
+            backgroundColor: theme.colorScheme.surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
-              side: const BorderSide(color: Colors.white12),
+              side: BorderSide(
+                color: isDark ? Colors.white12 : Colors.black12,
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.all(20),
@@ -411,8 +443,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       const SizedBox(width: 12),
                       Text(
                         title,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface,
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Cairo',
@@ -421,7 +453,10 @@ class _SettingsPageState extends State<SettingsPage> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Divider(color: Colors.white12, height: 1),
+                  Divider(
+                    color: isDark ? Colors.white12 : Colors.black12,
+                    height: 1,
+                  ),
                   const SizedBox(height: 12),
                   ...options.map((option) {
                     final isSelected = selectedValue == option;
@@ -440,12 +475,12 @@ class _SettingsPageState extends State<SettingsPage> {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xFF4A90E2).withValues(alpha: 0.15)
-                              : const Color(0xFF1A1D2E),
+                              : (isDark ? const Color(0xFF1A1D2E) : const Color(0xFFF4F6F9)),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected
                                 ? const Color(0xFF4A90E2)
-                                : Colors.white12,
+                                : (isDark ? Colors.white12 : Colors.black12),
                             width: isSelected ? 1.5 : 1,
                           ),
                         ),
@@ -456,8 +491,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               option,
                               style: TextStyle(
                                 color: isSelected
-                                    ? Colors.white
-                                    : Colors.grey[300],
+                                    ? const Color(0xFF4A90E2)
+                                    : theme.colorScheme.onSurface,
                                 fontSize: 15,
                                 fontWeight: isSelected
                                     ? FontWeight.bold
@@ -473,7 +508,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             else
                               Icon(
                                 Icons.radio_button_off_rounded,
-                                color: Colors.grey[600],
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                                 size: 20,
                               ),
                           ],
@@ -493,6 +528,8 @@ class _SettingsPageState extends State<SettingsPage> {
   /// Developer Info Dialog
   void _showDeveloperInfoDialog() {
     const linkedInUrl = "https://sy.linkedin.com/in/mohamad-hadi-said";
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     showDialog(
       context: context,
@@ -500,10 +537,12 @@ class _SettingsPageState extends State<SettingsPage> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Dialog(
-            backgroundColor: const Color(0xFF2A2D3E),
+            backgroundColor: theme.colorScheme.surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
-              side: const BorderSide(color: Colors.white12),
+              side: BorderSide(
+                color: isDark ? Colors.white12 : Colors.black12,
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.all(22),
@@ -537,10 +576,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   const SizedBox(height: 16),
 
-                  const Text(
+                  Text(
                     "مطور التطبيق",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: theme.colorScheme.onSurface,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Cairo',
@@ -548,15 +587,18 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   const SizedBox(height: 12),
-                  const Divider(color: Colors.white12, height: 1),
+                  Divider(
+                    color: isDark ? Colors.white12 : Colors.black12,
+                    height: 1,
+                  ),
                   const SizedBox(height: 16),
 
                   // Developer Message
-                  const Text(
+                  Text(
                     "تم تصميم هذا التطبيق من قبل المهندس محمد هادي سعيد",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.85),
                       fontSize: 15,
                       height: 1.5,
                       fontFamily: 'Cairo',
@@ -583,7 +625,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A1D2E),
+                          color: isDark ? const Color(0xFF1A1D2E) : const Color(0xFFF4F6F9),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
                             color: const Color(

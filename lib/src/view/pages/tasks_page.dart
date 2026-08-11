@@ -100,6 +100,9 @@ class _TasksPageState extends State<TasksPage> {
   }
 
   Widget _buildStatusTabBar() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final tabs = [
       {
         'title': 'الكل',
@@ -146,19 +149,30 @@ class _TasksPageState extends State<TasksPage> {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? accentColor : const Color(0xFF2A2D3E),
+                color: isSelected
+                    ? accentColor
+                    : theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: accentColor.withOpacity(0.35),
+                          color: accentColor.withValues(alpha: 0.35),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
                       ]
-                    : null,
+                    : [
+                        if (!isDark)
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 4,
+                            offset: const Offset(0, 1),
+                          ),
+                      ],
                 border: Border.all(
-                  color: isSelected ? accentColor : Colors.white12,
+                  color: isSelected
+                      ? accentColor
+                      : (isDark ? Colors.white12 : Colors.black12),
                   width: 1,
                 ),
               ),
@@ -168,13 +182,17 @@ class _TasksPageState extends State<TasksPage> {
                   Icon(
                     tab['icon'] as IconData,
                     size: 16,
-                    color: isSelected ? Colors.white : Colors.grey[400],
+                    color: isSelected
+                        ? Colors.white
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   const SizedBox(width: 6),
                   Text(
                     tab['title'] as String,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.grey[300],
+                      color: isSelected
+                          ? Colors.white
+                          : theme.colorScheme.onSurface,
                       fontSize: 13,
                       fontWeight: isSelected
                           ? FontWeight.bold
@@ -191,21 +209,25 @@ class _TasksPageState extends State<TasksPage> {
   }
 
   Widget _buildSearchBar() {
+    final theme = Theme.of(context);
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2D3E),
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: theme.brightness == Brightness.dark ? Colors.white12 : Colors.black12,
+        ),
       ),
       child: TextField(
         controller: _searchController,
-        style: const TextStyle(color: Colors.white),
-        decoration: const InputDecoration(
+        style: TextStyle(color: theme.colorScheme.onSurface),
+        decoration: InputDecoration(
           hintText: 'البحث في المهام...',
-          hintStyle: TextStyle(color: Colors.grey),
-          prefixIcon: Icon(Icons.search, color: Colors.grey),
+          hintStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+          prefixIcon: Icon(Icons.search, color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
           border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           fillColor: Colors.transparent,
         ),
         onChanged: (value) {

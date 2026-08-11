@@ -40,25 +40,30 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
 
   @override
   Widget build(BuildContext context) {
-    // RTL direction
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final borderColor = isDark ? Colors.white12 : Colors.black12;
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: const Color(
-          0xFF1A1D2E,
-        ), // dark background similar to screenshot
+        backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: const Color(0xFF1A1D2E),
+          backgroundColor: theme.scaffoldBackgroundColor,
           elevation: 0,
           centerTitle: true,
-          title: const Text(
+          title: Text(
             'تفاصيل المهمة',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
           ),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
-              icon: const Icon(Icons.arrow_forward),
+              icon: Icon(Icons.arrow_forward, color: theme.colorScheme.onSurface),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],
@@ -73,9 +78,11 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                   const SizedBox(height: 8),
 
                   // Title field (read-only style)
-                  const Text(
+                  Text(
                     'العنوان',
-                    style: TextStyle(color: Colors.white70),
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Container(
@@ -84,32 +91,42 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                       vertical: 14,
                     ),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white12),
+                      color: theme.colorScheme.surface,
+                      border: Border.all(color: borderColor),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       widget.task.title,
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
 
                   const SizedBox(height: 18),
 
                   // Description
-                  const Text('الوصف', style: TextStyle(color: Colors.white70)),
+                  Text(
+                    'الوصف',
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                  ),
                   const SizedBox(height: 6),
                   Container(
                     height: 140,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white12),
+                      color: theme.colorScheme.surface,
+                      border: Border.all(color: borderColor),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: SingleChildScrollView(
                       child: Text(
                         widget.task.note,
                         style: TextStyle(
-                          color: Colors.white70,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.85),
                           fontSize: 15,
                           height: 1.4,
                         ),
@@ -160,9 +177,11 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                   const SizedBox(height: 22),
 
                   // Status block
-                  const Text(
+                  Text(
                     'حالة المهمة',
-                    style: TextStyle(color: Colors.white70),
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Container(
@@ -170,8 +189,12 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                       horizontal: 12,
                       vertical: 14,
                     ),
-                    decoration: const BoxDecoration(
-                      border: Border(top: BorderSide(color: Colors.white12)),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: isDark ? Colors.white12 : Colors.black12,
+                        ),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +208,7 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: _getStatusColor(_currentStatus).withOpacity(0.2),
+                                color: _getStatusColor(_currentStatus).withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
                                   color: _getStatusColor(_currentStatus),
@@ -199,7 +222,12 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                                 ),
                               ),
                             ),
-                            const Text('الحالة الحالية', style: TextStyle(color: Colors.white54)),
+                            Text(
+                              'الحالة الحالية',
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -225,18 +253,26 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                       vertical: 14,
                     ),
                     decoration: BoxDecoration(
-                      border: Border(top: BorderSide(color: Colors.white12)),
+                      border: Border(
+                        top: BorderSide(
+                          color: isDark ? Colors.white12 : Colors.black12,
+                        ),
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           _formatTime(widget.task.dueTime),
-                          style: TextStyle(color: Colors.white54),
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                          ),
                         ),
                         Text(
                           'التوقيت',
-                          style: TextStyle(color: Colors.white54),
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                          ),
                         ),
                       ],
                     ),
@@ -251,7 +287,6 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                       _actionButton(
                         Icons.edit,
                         'تعديل',
-                        const Color(0xFF111720),
                         () {
                           Navigator.push(
                             context,
@@ -268,7 +303,6 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                       _actionButton(
                         Icons.delete,
                         'حذف',
-                        const Color(0xFF111720),
                         () {
                           sl<TasksBloc>().add(DeleteTask(widget.task.id));
                           Navigator.of(context).pop();
@@ -277,7 +311,6 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                       _actionButton(
                         Icons.nightlight_round,
                         'تأجيل',
-                        const Color(0xFF111720),
                         () {
                           Navigator.push(
                             context,
@@ -303,11 +336,14 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
   }
 
   Widget _buildSubtasksList() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return BlocBuilder<SubtasksBloc, SubTasksState>(
       bloc: bloc,
       builder: (context, state) {
         if (state is SubtasksLoading) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (state is SubtasksLoaded) {
@@ -320,6 +356,7 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                   children: [
                     Checkbox(
                       value: subtask.isDone,
+                      activeColor: const Color(0xFF4A90E2),
                       onChanged: (v) {
                         bloc.add(ToggleSubtaskStatus(subtask.id));
                       },
@@ -328,9 +365,14 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                     Expanded(
                       child: Text(
                         subtask.title,
-                        style: const TextStyle(
-                          color: Colors.white70,
+                        style: TextStyle(
+                          color: subtask.isDone
+                              ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
+                              : theme.colorScheme.onSurface,
                           fontSize: 15,
+                          decoration: subtask.isDone
+                              ? TextDecoration.lineThrough
+                              : null,
                         ),
                       ),
                     ),
@@ -344,12 +386,17 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF2A2D3E),
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark ? Colors.white12 : Colors.black12,
+            ),
           ),
-          child: const Text(
+          child: Text(
             'لا توجد مهام فرعية',
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
           ),
         );
       },
@@ -359,27 +406,36 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
   Widget _actionButton(
     IconData icon,
     String label,
-    Color bg,
     VoidCallback onPressed,
   ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Expanded(
       child: Container(
         height: 54,
         margin: const EdgeInsets.symmetric(horizontal: 6),
-        decoration: BoxDecoration(
-          color: const Color(0xFF111720),
-          borderRadius: BorderRadius.circular(16),
-        ),
         child: TextButton.icon(
           onPressed: onPressed,
           style: TextButton.styleFrom(
-            backgroundColor: bg,
+            backgroundColor: theme.colorScheme.surface,
+            foregroundColor: theme.colorScheme.onSurface,
+            elevation: isDark ? 2 : 1,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
+              side: BorderSide(
+                color: isDark ? Colors.white12 : Colors.black12,
+              ),
             ),
           ),
-          icon: Icon(icon, color: Colors.white70),
-          label: Text(label, style: const TextStyle(color: Colors.white70)),
+          icon: Icon(icon, color: theme.colorScheme.onSurface),
+          label: Text(
+            label,
+            style: TextStyle(
+              color: theme.colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ),
     );
@@ -398,6 +454,9 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
 
   Widget _statusChip(TaskStatus status, String label, Color color) {
     final isSelected = _currentStatus == status;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -409,15 +468,17 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? color : const Color(0xFF2A2D3E),
+            color: isSelected ? color : theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
-            border: isSelected ? null : Border.all(color: Colors.white24),
+            border: isSelected
+                ? null
+                : Border.all(color: isDark ? Colors.white12 : Colors.black12),
           ),
           child: Text(
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: isSelected ? Colors.white : Colors.white70,
+              color: isSelected ? Colors.white : theme.colorScheme.onSurface.withValues(alpha: 0.7),
               fontSize: 12,
               fontWeight: FontWeight.bold,
             ),

@@ -56,15 +56,16 @@ class _EditTaskPageState extends State<EditTaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1D2E),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1D2E),
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'تعديل المهمة',
           style: TextStyle(
-            color: Colors.white,
+            color: theme.colorScheme.onSurface,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -72,7 +73,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.close, color: Colors.white),
+          icon: Icon(Icons.close, color: theme.colorScheme.onSurface),
         ),
         actions: [
           TextButton(
@@ -164,10 +165,11 @@ class _EditTaskPageState extends State<EditTaskPage> {
   }
 
   Widget _buildSectionTitle(String title) {
+    final theme = Theme.of(context);
     return Text(
       title,
-      style: const TextStyle(
-        color: Colors.white,
+      style: TextStyle(
+        color: theme.colorScheme.onSurface,
         fontSize: 16,
         fontWeight: FontWeight.w600,
       ),
@@ -180,19 +182,30 @@ class _EditTaskPageState extends State<EditTaskPage> {
     int maxLines = 1,
     String? Function(String?)? validator,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return TextFormField(
       controller: controller,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: theme.colorScheme.onSurface),
       maxLines: maxLines,
       validator: validator,
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.grey),
+        hintStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
         filled: true,
-        fillColor: const Color(0xFF2A2D3E),
+        fillColor: theme.colorScheme.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(
+            color: isDark ? Colors.white12 : Colors.black12,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: isDark ? Colors.white12 : Colors.black12,
+          ),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -207,26 +220,35 @@ class _EditTaskPageState extends State<EditTaskPage> {
     required String value,
     required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF2A2D3E),
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark ? Colors.white12 : Colors.black12,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
+              style: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               value,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: theme.colorScheme.onSurface,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
@@ -269,20 +291,25 @@ class _EditTaskPageState extends State<EditTaskPage> {
 
   Widget _buildPriorityOption(Priority priority, String label, Color color) {
     final isSelected = _priority == priority;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () => setState(() => _priority = priority),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? color : const Color(0xFF2A2D3E),
+          color: isSelected ? color : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: isSelected ? null : Border.all(color: Colors.grey),
+          border: isSelected
+              ? null
+              : Border.all(color: isDark ? Colors.white12 : Colors.black12),
         ),
         child: Text(
           label,
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey,
+            color: isSelected ? Colors.white : theme.colorScheme.onSurface.withValues(alpha: 0.7),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -309,11 +336,14 @@ class _EditTaskPageState extends State<EditTaskPage> {
   }
 
   Widget _buildSubtasksList() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return BlocBuilder<SubtasksBloc, SubTasksState>(
       bloc: bloc,
       builder: (context, state) {
         if (state is SubtasksLoading) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (state is SubtasksLoaded) {
@@ -327,8 +357,11 @@ class _EditTaskPageState extends State<EditTaskPage> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2A2D3E),
+                  color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isDark ? Colors.white12 : Colors.black12,
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -344,7 +377,9 @@ class _EditTaskPageState extends State<EditTaskPage> {
                       child: Text(
                         subtask.title,
                         style: TextStyle(
-                          color: subtask.isDone ? Colors.grey : Colors.white,
+                          color: subtask.isDone
+                              ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
+                              : theme.colorScheme.onSurface,
                           decoration: subtask.isDone
                               ? TextDecoration.lineThrough
                               : null,
@@ -368,12 +403,17 @@ class _EditTaskPageState extends State<EditTaskPage> {
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF2A2D3E),
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark ? Colors.white12 : Colors.black12,
+            ),
           ),
-          child: const Text(
+          child: Text(
             'لا توجد مهام فرعية',
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
           ),
         );
       },
@@ -384,12 +424,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        // _buildActionButton(
-        //   Icons.nightlight_round,
-        //   "تأجيل",
-        //   const Color(0xFF4A90E2),
-        //   () {},
-        // ),
         _buildActionButton(Icons.delete, "حذف", Colors.redAccent, () {
           sl<TasksBloc>().add(DeleteTask(widget.task.id));
           Navigator.pop(context);
@@ -404,11 +438,21 @@ class _EditTaskPageState extends State<EditTaskPage> {
     Color color,
     void Function()? onPressed,
   ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF2A2D3E),
+        backgroundColor: theme.colorScheme.surface,
+        foregroundColor: color,
+        elevation: isDark ? 2 : 1,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isDark ? Colors.white12 : Colors.black12,
+          ),
+        ),
       ),
       onPressed: onPressed,
       icon: Icon(icon, color: color),
@@ -431,19 +475,29 @@ class _EditTaskPageState extends State<EditTaskPage> {
   }
 
   Future<void> _selectDate() async {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final date = await showDatePicker(
       context: context,
       initialDate: _dueDate,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(
-            primary: Color(0xFF4A90E2),
-            onPrimary: Colors.white,
-            surface: Color(0xFF2A2D3E),
-            onSurface: Colors.white,
-          ),
+        data: theme.copyWith(
+          colorScheme: isDark
+              ? const ColorScheme.dark(
+                  primary: Color(0xFF4A90E2),
+                  onPrimary: Colors.white,
+                  surface: Color(0xFF2A2D3E),
+                  onSurface: Colors.white,
+                )
+              : const ColorScheme.light(
+                  primary: Color(0xFF4A90E2),
+                  onPrimary: Colors.white,
+                  surface: Colors.white,
+                  onSurface: Color(0xFF1A1D2E),
+                ),
         ),
         child: child!,
       ),
@@ -452,17 +506,27 @@ class _EditTaskPageState extends State<EditTaskPage> {
   }
 
   Future<void> _selectTime() async {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final time = await showTimePicker(
       context: context,
       initialTime: _dueTime,
       builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(
-            primary: Color(0xFF4A90E2),
-            onPrimary: Colors.white,
-            surface: Color(0xFF2A2D3E),
-            onSurface: Colors.white,
-          ),
+        data: theme.copyWith(
+          colorScheme: isDark
+              ? const ColorScheme.dark(
+                  primary: Color(0xFF4A90E2),
+                  onPrimary: Colors.white,
+                  surface: Color(0xFF2A2D3E),
+                  onSurface: Colors.white,
+                )
+              : const ColorScheme.light(
+                  primary: Color(0xFF4A90E2),
+                  onPrimary: Colors.white,
+                  surface: Colors.white,
+                  onSurface: Color(0xFF1A1D2E),
+                ),
         ),
         child: child!,
       ),
@@ -514,20 +578,25 @@ class _EditTaskPageState extends State<EditTaskPage> {
 
   Widget _buildStatusOption(TaskStatus status, Color color) {
     final isSelected = _status == status;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () => setState(() => _status = status),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? color : const Color(0xFF2A2D3E),
+          color: isSelected ? color : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: isSelected ? null : Border.all(color: Colors.grey.withOpacity(0.5)),
+          border: isSelected
+              ? null
+              : Border.all(color: isDark ? Colors.white12 : Colors.black12),
         ),
         child: Text(
           status.arabicTitle,
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey,
+            color: isSelected ? Colors.white : theme.colorScheme.onSurface.withValues(alpha: 0.7),
             fontWeight: FontWeight.w600,
             fontSize: 13,
           ),

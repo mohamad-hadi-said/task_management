@@ -20,9 +20,10 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1D2E),
-      appBar: _buildAppBar(),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: _buildAppBar(context),
 
       body: Container(
         margin: const EdgeInsets.only(top: 10),
@@ -50,19 +51,27 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final theme = Theme.of(context);
     return AppBar(
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(10),
         child: Container(),
       ),
-      shape: const Border(bottom: BorderSide(color: Colors.white, width: 0.2)),
-      backgroundColor: const Color(0xFF1A1D2E),
+      shape: Border(
+        bottom: BorderSide(
+          color: theme.brightness == Brightness.dark
+              ? Colors.white12
+              : Colors.black12,
+          width: 0.5,
+        ),
+      ),
+      backgroundColor: theme.scaffoldBackgroundColor,
       elevation: 0,
-      title: const Text(
-        'مهامي',
+      title: Text(
+        'وقتي أمانة',
         style: TextStyle(
-          color: Colors.white,
+          color: theme.colorScheme.onSurface,
           fontSize: 20,
           fontWeight: FontWeight.bold,
           fontFamily: 'Cairo',
@@ -72,11 +81,16 @@ class _MainPageState extends State<MainPage> {
       actions: [
         // Search icon
         IconButton(
+          style: IconButton.styleFrom(
+            backgroundColor: theme.colorScheme.surface,
+            foregroundColor: theme.colorScheme.onSurface,
+          ),
           onPressed: () {
             sl<SearchBtnCubit>().toggle();
           },
-          icon: const Icon(Icons.search, color: Colors.white),
+          icon: Icon(Icons.search, color: theme.colorScheme.onSurface),
         ),
+        SizedBox(width: 10),
       ],
     );
   }
