@@ -1,30 +1,54 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:task_management/main.dart';
+import 'package:task_management/core/theme/azkar_theme.dart';
+import 'package:task_management/core/utils/enums.dart';
+import 'package:task_management/src/model/task_model.dart';
+import 'package:task_management/src/view/widgets/task_card.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('TaskCard Widget Test', () {
+    final sampleTask = TaskModel(
+      id: 10,
+      title: 'اختبار البطاقة',
+      note: 'ملاحظة اختبارية',
+      dueTime: DateTime.now().add(const Duration(hours: 2)),
+      status: TaskStatus.todo,
+      priority: Priority.high,
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    testWidgets('renders task title, note, status, and priority badge correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AzkarTheme.darkTheme,
+          home: Scaffold(
+            body: TaskCard(
+              task: sampleTask,
+            ),
+          ),
+        ),
+      );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+      expect(find.text('اختبار البطاقة'), findsOneWidget);
+      expect(find.text('ملاحظة اختبارية'), findsOneWidget);
+      expect(find.text('يجب إنجازه'), findsOneWidget);
+      expect(find.text('عالية'), findsOneWidget);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    testWidgets('shows checkmark when in selection mode and selected', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AzkarTheme.darkTheme,
+          home: Scaffold(
+            body: TaskCard(
+              task: sampleTask,
+              isSelectionMode: true,
+              isSelected: true,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.check), findsOneWidget);
+    });
   });
 }
