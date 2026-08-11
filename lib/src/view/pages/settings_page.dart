@@ -339,6 +339,13 @@ class _SettingsPageState extends State<SettingsPage> {
       options: ["العربية", "English"],
       selectedValue: selectedLanguage,
       onSelect: (val) {
+        if (val == "English") {
+          Toast.warning(
+            context,
+            "لم يتم دعم هذه الميزة بعد، سيتم دعمها في الإصدارات القادمة",
+          );
+          return;
+        }
         setState(() {
           selectedLanguage = val;
         });
