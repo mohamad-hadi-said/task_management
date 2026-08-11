@@ -22,8 +22,11 @@ class DetailsTaskPage extends StatefulWidget {
 class _DetailsTaskPageState extends State<DetailsTaskPage> {
   late SubtasksBloc bloc;
   final _subtaskController = TextEditingController();
+  late TaskStatus _currentStatus;
+
   @override
   void initState() {
+    _currentStatus = widget.task.status;
     bloc = sl<SubtasksBloc>()..add(LoadSubtasks(widget.task.id));
     super.initState();
   }
@@ -182,16 +185,16 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: _getStatusColor(widget.task.status).withOpacity(0.2),
+                                color: _getStatusColor(_currentStatus).withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: _getStatusColor(widget.task.status),
+                                  color: _getStatusColor(_currentStatus),
                                 ),
                               ),
                               child: Text(
-                                widget.task.status.arabicTitle,
+                                _currentStatus.arabicTitle,
                                 style: TextStyle(
-                                  color: _getStatusColor(widget.task.status),
+                                  color: _getStatusColor(_currentStatus),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -394,13 +397,13 @@ class _DetailsTaskPageState extends State<DetailsTaskPage> {
   }
 
   Widget _statusChip(TaskStatus status, String label, Color color) {
-    final isSelected = widget.task.status == status;
+    final isSelected = _currentStatus == status;
     return Expanded(
       child: GestureDetector(
         onTap: () {
           sl<TasksBloc>().add(ChangeTaskStatus(widget.task.id, status));
           setState(() {
-            // Instant feedback
+            _currentStatus = status;
           });
         },
         child: Container(

@@ -8,6 +8,7 @@ import 'package:task_management/src/repositories/task_repository.dart';
 // Bloc
 class TasksBloc extends Bloc<TasksEvent, TasksState> {
   final TaskRepository _taskRepository;
+  TasksEvent? _lastFilterEvent;
 
   TasksBloc({required TaskRepository taskRepository})
     : _taskRepository = taskRepository,
@@ -24,8 +25,13 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<FilterTasksBySpecificStatus>(_onFilterTasksBySpecificStatus);
   }
 
+  void _reloadTasks() {
+    add(_lastFilterEvent ?? LoadTasks());
+  }
+
   Future<void> _onLoadTasks(LoadTasks event, Emitter<TasksState> emit) async {
     try {
+      _lastFilterEvent = event;
       emit(TasksLoading());
       final tasks = await _taskRepository.getAllTasks();
 
@@ -51,8 +57,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         event.task.note,
         event.task.dueTime,
       );
-      // Reload tasks
-      add(LoadTasks());
+      // Reload tasks with active filter
+      _reloadTasks();
     } catch (e) {
       emit(TasksError('فشل في إضافة المهمة: ${e.toString()}'));
     }
@@ -68,8 +74,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         event.task.note,
         event.task.dueTime,
       );
-      // // Reload tasks
-      add(LoadTasks());
+      // Reload tasks with active filter
+      _reloadTasks();
     } catch (e) {
       emit(TasksError('فشل في تحديث المهمة: ${e.toString()}'));
     }
@@ -79,8 +85,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     try {
       await _taskRepository.deleteTask(event.taskId);
       cancelTaskNotification(event.taskId);
-      // Reload tasks
-      add(LoadTasks());
+      // Reload tasks with active filter
+      _reloadTasks();
     } catch (e) {
       emit(TasksError('فشل في حذف المهمة: ${e.toString()}'));
     }
@@ -107,8 +113,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         }
         await _taskRepository.updateTaskStatus(event.taskId, nextStatus);
 
-        // Reload tasks
-        add(LoadTasks());
+        // Reload tasks with active filter
+        _reloadTasks();
       }
     } catch (e) {
       emit(TasksError('فشل في تغيير حالة المهمة: ${e.toString()}'));
@@ -121,7 +127,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   ) async {
     try {
       await _taskRepository.updateTaskStatus(event.taskId, event.status);
-      add(LoadTasks());
+      _reloadTasks();
     } catch (e) {
       emit(TasksError('فشل في تغيير حالة المهمة: ${e.toString()}'));
     }
@@ -132,6 +138,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     Emitter<TasksState> emit,
   ) async {
     try {
+      _lastFilterEvent = event;
       if (event.query.isEmpty) {
         add(LoadTasks());
       } else {
@@ -148,6 +155,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     Emitter<TasksState> emit,
   ) async {
     try {
+      _lastFilterEvent = event;
       final tasks = await _taskRepository.getTasksByPriority(event.priority);
       emit(TasksLoaded(tasks: tasks));
     } catch (e) {
@@ -160,6 +168,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     Emitter<TasksState> emit,
   ) async {
     try {
+      _lastFilterEvent = event;
       final tasks = event.isCompleted
           ? await _taskRepository.getCompletedTasks()
           : await _taskRepository.getPendingTasks();
@@ -174,6 +183,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     Emitter<TasksState> emit,
   ) async {
     try {
+      _lastFilterEvent = event;
       final tasks = await _taskRepository.getTasksByStatus(event.status);
       emit(TasksLoaded(tasks: tasks));
     } catch (e) {
@@ -181,4 +191,5 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     }
   }
 }
+
 

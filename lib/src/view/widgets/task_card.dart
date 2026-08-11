@@ -73,12 +73,22 @@ class TaskCard extends StatelessWidget {
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          decoration: task.isDone
-                              ? TextDecoration.lineThrough
-                              : null,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
+                      // Task note
+                      if (task.note.isNotEmpty) ...[
+                        Text(
+                          task.note,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.grey.shade100,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
 
                       // Task status & priority badges
                       Row(
@@ -92,7 +102,10 @@ class TaskCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: _getStatusBgColor(),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: _getStatusBorderColor(), width: 1),
+                              border: Border.all(
+                                color: _getStatusBorderColor(),
+                                width: 1,
+                              ),
                             ),
                             child: Text(
                               task.status.arabicTitle,
@@ -231,4 +244,3 @@ class TaskCard extends StatelessWidget {
     return '$displayHour:$displayMinute $period';
   }
 }
-
