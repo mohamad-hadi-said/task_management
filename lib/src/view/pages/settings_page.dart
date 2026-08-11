@@ -118,7 +118,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
                 child: const Text(
-                  'v1.0.0',
+                  'v1.1.0',
                   style: TextStyle(
                     color: Color(0xFF27AE60),
                     fontSize: 12,
