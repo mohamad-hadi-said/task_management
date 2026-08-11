@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:task_management/src/model/task_model.dart';
 
 part 'home_state.freezed.dart';
 
@@ -8,7 +9,7 @@ abstract class HomeState with _$HomeState {
     @Default(false) bool loading,
     @Default(false) bool error,
     String? errorMessage,
-    DateTime? dateTime,
+    List<TaskModel>? tasks,
   }) = _HomeState;
 
 }

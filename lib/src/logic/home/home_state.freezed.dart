@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HomeState {
 
- bool get loading; bool get error; String? get errorMessage; DateTime? get dateTime;
+ bool get loading; bool get error; String? get errorMessage; List<TaskModel>? get tasks;
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $HomeStateCopyWith<HomeState> get copyWith => _$HomeStateCopyWithImpl<HomeState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.dateTime, dateTime) || other.dateTime == dateTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&const DeepCollectionEquality().equals(other.tasks, tasks));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,loading,error,errorMessage,dateTime);
+int get hashCode => Object.hash(runtimeType,loading,error,errorMessage,const DeepCollectionEquality().hash(tasks));
 
 @override
 String toString() {
-  return 'HomeState(loading: $loading, error: $error, errorMessage: $errorMessage, dateTime: $dateTime)';
+  return 'HomeState(loading: $loading, error: $error, errorMessage: $errorMessage, tasks: $tasks)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $HomeStateCopyWith<$Res>  {
   factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) _then) = _$HomeStateCopyWithImpl;
 @useResult
 $Res call({
- bool loading, bool error, String? errorMessage, DateTime? dateTime
+ bool loading, bool error, String? errorMessage, List<TaskModel>? tasks
 });
 
 
@@ -62,13 +62,13 @@ class _$HomeStateCopyWithImpl<$Res>
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? loading = null,Object? error = null,Object? errorMessage = freezed,Object? dateTime = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? loading = null,Object? error = null,Object? errorMessage = freezed,Object? tasks = freezed,}) {
   return _then(_self.copyWith(
 loading: null == loading ? _self.loading : loading // ignore: cast_nullable_to_non_nullable
 as bool,error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,dateTime: freezed == dateTime ? _self.dateTime : dateTime // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as String?,tasks: freezed == tasks ? _self.tasks : tasks // ignore: cast_nullable_to_non_nullable
+as List<TaskModel>?,
   ));
 }
 
@@ -153,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool loading,  bool error,  String? errorMessage,  DateTime? dateTime)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool loading,  bool error,  String? errorMessage,  List<TaskModel>? tasks)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
-return $default(_that.loading,_that.error,_that.errorMessage,_that.dateTime);case _:
+return $default(_that.loading,_that.error,_that.errorMessage,_that.tasks);case _:
   return orElse();
 
 }
@@ -174,10 +174,10 @@ return $default(_that.loading,_that.error,_that.errorMessage,_that.dateTime);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool loading,  bool error,  String? errorMessage,  DateTime? dateTime)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool loading,  bool error,  String? errorMessage,  List<TaskModel>? tasks)  $default,) {final _that = this;
 switch (_that) {
 case _HomeState():
-return $default(_that.loading,_that.error,_that.errorMessage,_that.dateTime);case _:
+return $default(_that.loading,_that.error,_that.errorMessage,_that.tasks);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +194,10 @@ return $default(_that.loading,_that.error,_that.errorMessage,_that.dateTime);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool loading,  bool error,  String? errorMessage,  DateTime? dateTime)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool loading,  bool error,  String? errorMessage,  List<TaskModel>? tasks)?  $default,) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
-return $default(_that.loading,_that.error,_that.errorMessage,_that.dateTime);case _:
+return $default(_that.loading,_that.error,_that.errorMessage,_that.tasks);case _:
   return null;
 
 }
@@ -209,13 +209,21 @@ return $default(_that.loading,_that.error,_that.errorMessage,_that.dateTime);cas
 
 
 class _HomeState implements HomeState {
-   _HomeState({this.loading = false, this.error = false, this.errorMessage, this.dateTime});
+   _HomeState({this.loading = false, this.error = false, this.errorMessage, final  List<TaskModel>? tasks}): _tasks = tasks;
   
 
 @override@JsonKey() final  bool loading;
 @override@JsonKey() final  bool error;
 @override final  String? errorMessage;
-@override final  DateTime? dateTime;
+ final  List<TaskModel>? _tasks;
+@override List<TaskModel>? get tasks {
+  final value = _tasks;
+  if (value == null) return null;
+  if (_tasks is EqualUnmodifiableListView) return _tasks;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +235,16 @@ _$HomeStateCopyWith<_HomeState> get copyWith => __$HomeStateCopyWithImpl<_HomeSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.dateTime, dateTime) || other.dateTime == dateTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&const DeepCollectionEquality().equals(other._tasks, _tasks));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,loading,error,errorMessage,dateTime);
+int get hashCode => Object.hash(runtimeType,loading,error,errorMessage,const DeepCollectionEquality().hash(_tasks));
 
 @override
 String toString() {
-  return 'HomeState(loading: $loading, error: $error, errorMessage: $errorMessage, dateTime: $dateTime)';
+  return 'HomeState(loading: $loading, error: $error, errorMessage: $errorMessage, tasks: $tasks)';
 }
 
 
@@ -247,7 +255,7 @@ abstract mixin class _$HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Re
   factory _$HomeStateCopyWith(_HomeState value, $Res Function(_HomeState) _then) = __$HomeStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool loading, bool error, String? errorMessage, DateTime? dateTime
+ bool loading, bool error, String? errorMessage, List<TaskModel>? tasks
 });
 
 
@@ -264,13 +272,13 @@ class __$HomeStateCopyWithImpl<$Res>
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? loading = null,Object? error = null,Object? errorMessage = freezed,Object? dateTime = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? loading = null,Object? error = null,Object? errorMessage = freezed,Object? tasks = freezed,}) {
   return _then(_HomeState(
 loading: null == loading ? _self.loading : loading // ignore: cast_nullable_to_non_nullable
 as bool,error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,dateTime: freezed == dateTime ? _self.dateTime : dateTime // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as String?,tasks: freezed == tasks ? _self._tasks : tasks // ignore: cast_nullable_to_non_nullable
+as List<TaskModel>?,
   ));
 }
 

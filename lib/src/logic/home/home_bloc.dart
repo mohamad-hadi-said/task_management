@@ -1,9 +1,8 @@
-import 'package:task_management/core/cache/app_cache.dart';
 import 'package:task_management/src/logic/home/home_state.dart';
-import 'package:task_management/src/repositories/quiz_repository_impl.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:task_management/injection_container.dart';
+import 'package:task_management/src/repositories/task_repository.dart';
 
 part 'home_event.dart';
 
@@ -12,39 +11,31 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<LoadHome>(_onLoadHome);
   }
 
-  final azkarRepository = sl<AzkarRepository>();
+  final taskRepository = sl<TaskRepository>();
 
   Future<void> _onLoadHome(LoadHome event, Emitter<HomeState> emit) async {
     emit(state.copyWith(loading: true, error: false));
-
-    final azkar = await azkarRepository.getAllAzkar();
-    azkar.fold(
-      (l) => emit(
-        state.copyWith(
-          loading: false,
-          error: true,
-          errorMessage: 'خطأ في تحميل الأذكار: ${l.message}',
-        ),
-      ),
-      (r) {
-        if (r.isEmpty) {
-          AppCache.instance.saveAzkar(r);
-          emit(
-            state.copyWith(
-              loading: false,
-              error: true,
-              errorMessage: 'لا توجد أذكار متاحة',
-            ),
-          );
-          return;
-        }
+    try {
+      final tasks = await taskRepository.getAllTasks();
+      if (tasks.isEmpty) {
         emit(
           state.copyWith(
             loading: false,
-            error: false
+            error: false,
+            errorMessage: 'لايوجد مهام!',
           ),
         );
-      },
-    );
+      } else {
+        emit(state.copyWith(loading: false, error: false, tasks: tasks));
+      }
+    } catch (e) {
+      emit(
+        state.copyWith(
+          loading: false,
+          error: true,
+          errorMessage: "يوجد خطأ : $e",
+        ),
+      );
+    }
   }
 }
