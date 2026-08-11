@@ -24,15 +24,12 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1D2E),
       appBar: _buildAppBar(),
-      
+
       body: Container(
         margin: const EdgeInsets.only(top: 10),
         child: IndexedStack(
           index: _currentIndex.clamp(0, 1),
-          children: const [
-            TasksPage(),
-            SettingsPage(),
-          ],
+          children: const [TasksPage(), SettingsPage()],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -60,9 +57,7 @@ class _MainPageState extends State<MainPage> {
         preferredSize: const Size.fromHeight(10),
         child: Container(),
       ),
-      shape: const Border(
-        bottom: BorderSide(color: Colors.white, width: 0.2),
-      ),
+      shape: const Border(bottom: BorderSide(color: Colors.white, width: 0.2)),
       backgroundColor: const Color(0xFF1A1D2E),
       elevation: 0,
       title: const Text(
@@ -78,14 +73,9 @@ class _MainPageState extends State<MainPage> {
         // Search icon
         IconButton(
           onPressed: () {
-           sl<SearchBtnCubit>().toggle();
+            sl<SearchBtnCubit>().toggle();
           },
           icon: const Icon(Icons.search, color: Colors.white),
-        ),
-        // Filter icon
-        IconButton(
-          onPressed: () => _showFilterDialog(),
-          icon: const Icon(Icons.filter_list, color: Colors.white),
         ),
       ],
     );
