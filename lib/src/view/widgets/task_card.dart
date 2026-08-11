@@ -5,13 +5,19 @@ import 'package:task_management/core/utils/enums.dart';
 class TaskCard extends StatelessWidget {
   final TaskModel task;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final VoidCallback? onToggleStatus;
+  final bool isSelected;
+  final bool isSelectionMode;
 
   const TaskCard({
     Key? key,
     required this.task,
     this.onTap,
+    this.onLongPress,
     this.onToggleStatus,
+    this.isSelected = false,
+    this.isSelectionMode = false,
   }) : super(key: key);
 
   @override
@@ -19,12 +25,15 @@ class TaskCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final cardBgColor = theme.cardTheme.color ?? theme.colorScheme.surface;
+    final effectiveBgColor = isSelected
+        ? (isDark ? const Color(0xFF2A364F) : const Color(0xFFEBF3FC))
+        : cardBgColor;
     final textColor = theme.colorScheme.onSurface;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
       decoration: BoxDecoration(
-        color: cardBgColor,
+        color: effectiveBgColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -33,20 +42,46 @@ class TaskCard extends StatelessWidget {
             offset: const Offset(0, 2),
           ),
         ],
-        border: isDark ? null : Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: isSelected
+            ? Border.all(color: const Color(0xFF4A90E2), width: 2)
+            : (isDark ? null : Border.all(color: Colors.black.withValues(alpha: 0.06))),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
+          onLongPress: onLongPress,
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
+                // Multi-selection checkmark indicator
+                if (isSelectionMode) ...[
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isSelected ? const Color(0xFF4A90E2) : Colors.transparent,
+                      border: Border.all(
+                        color: isSelected
+                            ? const Color(0xFF4A90E2)
+                            : (isDark ? Colors.white38 : Colors.black38),
+                        width: 2,
+                      ),
+                    ),
+                    child: isSelected
+                        ? const Icon(Icons.check, size: 16, color: Colors.white)
+                        : null,
+                  ),
+                  const SizedBox(width: 12),
+                ],
+
                 // Status icon toggle
                 GestureDetector(
-                  onTap: onToggleStatus,
+                  onTap: isSelectionMode ? onTap : onToggleStatus,
                   child: Container(
                     width: 32,
                     height: 32,

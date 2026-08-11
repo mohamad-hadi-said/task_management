@@ -6,6 +6,7 @@ import 'package:task_management/core/services/database_helper.dart';
 import 'package:task_management/src/api/database_controller.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 import 'package:task_management/src/logic/cubit/theme_cubit.dart';
+import 'package:task_management/src/logic/cubit/task_selection_cubit.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 final GetIt sl = GetIt.instance;
@@ -28,4 +29,5 @@ Future<void> configureDependencies() async {
 
   sl.registerLazySingleton(() => SearchBtnCubit());
   sl.registerLazySingleton(() => ThemeCubit());
+  sl.registerLazySingleton(() => TaskSelectionCubit());
 }

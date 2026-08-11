@@ -8,6 +8,7 @@ import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 import 'package:task_management/src/model/task_model.dart';
 import 'package:task_management/src/view/pages/details_task_page.dart';
 import 'package:task_management/src/view/widgets/task_card.dart';
+import 'package:task_management/src/logic/cubit/task_selection_cubit.dart';
 import 'package:task_management/src/logic/tasks/tasks_event.dart';
 
 class TasksPage extends StatefulWidget {
@@ -34,6 +35,7 @@ class _TasksPageState extends State<TasksPage> {
   }
 
   void _loadTasksForCurrentTab() {
+    sl<TaskSelectionCubit>().clearSelection();
     switch (_selectedTabIndex) {
       case 0:
         sl<TasksBloc>().add(LoadTasks());
@@ -238,19 +240,36 @@ class _TasksPageState extends State<TasksPage> {
   }
 
   Widget _buildTasksList(List<TaskModel> tasks) {
-    return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 100), // Space for FAB
-      itemCount: tasks.length,
-      itemBuilder: (context, index) {
-        final task = tasks[index];
-        return TaskCard(
-          task: task,
-          onToggleStatus: () {
-            sl<TasksBloc>().add(ToggleTaskStatus(task.id));
-          },
-          onTap: () {
-            // Navigate to task details
-            _navigateToTaskDetails(task);
+    return BlocBuilder<TaskSelectionCubit, Set<int>>(
+      bloc: sl<TaskSelectionCubit>(),
+      builder: (context, selectedTaskIds) {
+        final isSelectionMode = selectedTaskIds.isNotEmpty;
+
+        return ListView.builder(
+          padding: const EdgeInsets.only(bottom: 100), // Space for FAB
+          itemCount: tasks.length,
+          itemBuilder: (context, index) {
+            final task = tasks[index];
+            final isSelected = selectedTaskIds.contains(task.id);
+
+            return TaskCard(
+              task: task,
+              isSelected: isSelected,
+              isSelectionMode: isSelectionMode,
+              onToggleStatus: () {
+                sl<TasksBloc>().add(ToggleTaskStatus(task.id));
+              },
+              onLongPress: () {
+                sl<TaskSelectionCubit>().toggleSelection(task.id);
+              },
+              onTap: () {
+                if (isSelectionMode) {
+                  sl<TaskSelectionCubit>().toggleSelection(task.id);
+                } else {
+                  _navigateToTaskDetails(task);
+                }
+              },
+            );
           },
         );
       },

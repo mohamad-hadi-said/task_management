@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_management/injection_container.dart';
 import 'package:task_management/src/logic/cubit/search_btn_cubit.dart';
+import 'package:task_management/src/logic/cubit/task_selection_cubit.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 import 'package:task_management/src/view/pages/add_task_page.dart';
 import 'package:task_management/src/view/pages/settings_page.dart';
@@ -43,6 +45,7 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: CustomBottomNavigation(
         currentIndex: _currentIndex,
         onTap: (index) {
+          sl<TaskSelectionCubit>().clearSelection();
           setState(() {
             _currentIndex = index;
           });
@@ -53,45 +56,133 @@ class _MainPageState extends State<MainPage> {
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     final theme = Theme.of(context);
-    return AppBar(
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(10),
-        child: Container(),
+    final isDark = theme.brightness == Brightness.dark;
+
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kToolbarHeight + 10),
+      child: BlocBuilder<TaskSelectionCubit, Set<int>>(
+        bloc: sl<TaskSelectionCubit>(),
+        builder: (context, selectedIds) {
+          final isSelectionMode = selectedIds.isNotEmpty;
+
+          return AppBar(
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(10),
+              child: Container(),
+            ),
+            shape: Border(
+              bottom: BorderSide(
+                color: isDark ? Colors.white12 : Colors.black12,
+                width: 0.5,
+              ),
+            ),
+            backgroundColor: theme.scaffoldBackgroundColor,
+            elevation: 0,
+            leading: isSelectionMode
+                ? IconButton(
+                    icon: Icon(Icons.close, color: theme.colorScheme.onSurface),
+                    onPressed: () {
+                      sl<TaskSelectionCubit>().clearSelection();
+                    },
+                  )
+                : null,
+            title: Text(
+              isSelectionMode
+                  ? 'تم تحديد (${selectedIds.length})'
+                  : 'وقتي أمانة',
+              style: TextStyle(
+                color: theme.colorScheme.onSurface,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Cairo',
+              ),
+            ),
+            centerTitle: true,
+            actions: isSelectionMode
+                ? [
+                    IconButton(
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.redAccent.withValues(alpha: 0.15),
+                        foregroundColor: Colors.redAccent,
+                      ),
+                      onPressed: () => _confirmDeleteSelectedTasks(context, selectedIds),
+                      icon: const Icon(Icons.delete_rounded, color: Colors.redAccent),
+                    ),
+                    const SizedBox(width: 10),
+                  ]
+                : [
+                    IconButton(
+                      style: IconButton.styleFrom(
+                        backgroundColor: theme.colorScheme.surface,
+                        foregroundColor: theme.colorScheme.onSurface,
+                      ),
+                      onPressed: () {
+                        sl<SearchBtnCubit>().toggle();
+                      },
+                      icon: Icon(Icons.search, color: theme.colorScheme.onSurface),
+                    ),
+                    const SizedBox(width: 10),
+                  ],
+          );
+        },
       ),
-      shape: Border(
-        bottom: BorderSide(
-          color: theme.brightness == Brightness.dark
-              ? Colors.white12
-              : Colors.black12,
-          width: 0.5,
-        ),
-      ),
-      backgroundColor: theme.scaffoldBackgroundColor,
-      elevation: 0,
-      title: Text(
-        'وقتي أمانة',
-        style: TextStyle(
-          color: theme.colorScheme.onSurface,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'Cairo',
-        ),
-      ),
-      centerTitle: true,
-      actions: [
-        // Search icon
-        IconButton(
-          style: IconButton.styleFrom(
-            backgroundColor: theme.colorScheme.surface,
-            foregroundColor: theme.colorScheme.onSurface,
+    );
+  }
+
+  void _confirmDeleteSelectedTasks(BuildContext context, Set<int> selectedIds) {
+    final theme = Theme.of(context);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: theme.colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'حذف المهام المحددة',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
           ),
-          onPressed: () {
-            sl<SearchBtnCubit>().toggle();
-          },
-          icon: Icon(Icons.search, color: theme.colorScheme.onSurface),
         ),
-        SizedBox(width: 10),
-      ],
+        content: Text(
+          'هل أنت تأكد من رغبتك في حذف (${selectedIds.length}) من المهام المحددة؟',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'إلغاء',
+              style: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(ctx);
+              sl<TasksBloc>().add(DeleteMultipleTasks(selectedIds.toList()));
+              sl<TaskSelectionCubit>().clearSelection();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('تم حذف المهام المحددة بنجاح'),
+                  backgroundColor: Colors.redAccent,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            child: const Text('حذف', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 

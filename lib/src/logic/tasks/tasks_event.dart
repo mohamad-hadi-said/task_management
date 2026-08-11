@@ -24,6 +24,11 @@ class DeleteTask extends TasksEvent {
   DeleteTask(this.taskId);
 }
 
+class DeleteMultipleTasks extends TasksEvent {
+  final List<int> taskIds;
+  DeleteMultipleTasks(this.taskIds);
+}
+
 class ToggleTaskStatus extends TasksEvent {
   final int taskId;
   ToggleTaskStatus(this.taskId);

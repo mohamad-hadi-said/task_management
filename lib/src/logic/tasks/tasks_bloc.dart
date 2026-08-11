@@ -17,6 +17,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<AddTask>(_onAddTask);
     on<UpdateTask>(_onUpdateTask);
     on<DeleteTask>(_onDeleteTask);
+    on<DeleteMultipleTasks>(_onDeleteMultipleTasks);
     on<ToggleTaskStatus>(_onToggleTaskStatus);
     on<ChangeTaskStatus>(_onChangeTaskStatus);
     on<SearchTasks>(_onSearchTasks);
@@ -89,6 +90,21 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       _reloadTasks();
     } catch (e) {
       emit(TasksError('فشل في حذف المهمة: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onDeleteMultipleTasks(
+    DeleteMultipleTasks event,
+    Emitter<TasksState> emit,
+  ) async {
+    try {
+      for (final id in event.taskIds) {
+        await _taskRepository.deleteTask(id);
+        cancelTaskNotification(id);
+      }
+      _reloadTasks();
+    } catch (e) {
+      emit(TasksError('فشل في حذف المهام: ${e.toString()}'));
     }
   }
 
