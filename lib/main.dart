@@ -4,7 +4,6 @@ import 'package:task_management/core/theme/azkar_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:task_management/core/cache/app_cache.dart';
-import 'package:task_management/core/services/ad_mob_service.dart';
 import 'package:task_management/core/theme/app_text_theme.dart';
 import 'package:task_management/src/api/database_controller.dart';
 import 'src/view/pages/main_page.dart';
@@ -27,15 +26,6 @@ Future<void> main() async {
     NotificationService.initialize();
     NotificationService.ensurePermission();
 
-    AdMobService.configure(
-      androidInterstitial: 'ca-app-pub-XXXXXXXXXXXXXXXXXXXXXX',
-      androidRewardedInterstitial: 'ca-app-pub-XXXXXXXXXXXXXXXXXXXXXX',
-      androidAppOpen: 'ca-app-pub-XXXXXXXXXXXXXXXXXXXXXX',
-      androidNative: 'ca-app-pub-XXXXXXXXXXXXXXXXXXXXXX',
-    );
-
-    // Initialize AdMob
-    AdMobService.initialize();
 
 
     AwesomeNotifications().setListeners(
@@ -180,13 +170,6 @@ class _AppLifecycleWrapperState extends State<_AppLifecycleWrapper>
     super.dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // Try to show App Open ad when user returns to the app
-      AdMobService.showAppOpenIfAvailable();
-    }
-  }
 
   @override
   Widget build(BuildContext context) => widget.child;
