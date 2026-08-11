@@ -19,7 +19,12 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'task_management.db');
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: 2,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -30,7 +35,7 @@ class DatabaseHelper {
         title TEXT NOT NULL,
         note TEXT NOT NULL,
         due_time TEXT NOT NULL,
-        is_done INTEGER NOT NULL DEFAULT 0,
+        status INTEGER NOT NULL DEFAULT 0,
         priority INTEGER NOT NULL DEFAULT 1
       )
     ''');
@@ -48,9 +53,17 @@ class DatabaseHelper {
 
     // Create indexes for better performance
     await db.execute('CREATE INDEX idx_tasks_due_time ON tasks(due_time)');
-    await db.execute('CREATE INDEX idx_tasks_is_done ON tasks(is_done)');
+    await db.execute('CREATE INDEX idx_tasks_status ON tasks(status)');
     await db.execute('CREATE INDEX idx_subtasks_task_id ON subtasks(task_id)');
     await db.execute('CREATE INDEX idx_subtasks_is_done ON subtasks(is_done)');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE tasks ADD COLUMN status INTEGER NOT NULL DEFAULT 0');
+      await db.execute('UPDATE tasks SET status = 2 WHERE is_done = 1');
+      await db.execute('CREATE INDEX idx_tasks_status ON tasks(status)');
+    }
   }
 
   // Close database connection
@@ -122,12 +135,26 @@ class DatabaseHelper {
     });
   }
 
+  Future<List<TaskModel>> getTasksByStatus(TaskStatus status) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'tasks',
+      where: 'status = ?',
+      whereArgs: [status.index],
+      orderBy: 'due_time ASC',
+    );
+
+    return List.generate(maps.length, (i) {
+      return TaskModel.fromMap(maps[i]);
+    });
+  }
+
   Future<List<TaskModel>> getCompletedTasks() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
       'tasks',
-      where: 'is_done = ?',
-      whereArgs: [1],
+      where: 'status = ?',
+      whereArgs: [TaskStatus.done.index],
       orderBy: 'due_time DESC',
     );
 
@@ -140,8 +167,8 @@ class DatabaseHelper {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
       'tasks',
-      where: 'is_done = ?',
-      whereArgs: [0],
+      where: 'status != ?',
+      whereArgs: [TaskStatus.done.index],
       orderBy: 'due_time ASC',
     );
 

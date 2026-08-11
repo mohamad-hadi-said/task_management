@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:task_management/core/utils/enums.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_management/injection_container.dart';
 import 'package:task_management/src/logic/cubit/search_btn_cubit.dart';
+import 'package:task_management/src/logic/cubit/task_selection_cubit.dart';
 import 'package:task_management/src/logic/tasks/tasks_bloc.dart';
 import 'package:task_management/src/view/pages/add_task_page.dart';
 import 'package:task_management/src/view/pages/settings_page.dart';
@@ -21,135 +22,166 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1D2E),
-      appBar: _buildAppBar(),
-      
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: _buildAppBar(context),
+
       body: Container(
         margin: const EdgeInsets.only(top: 10),
         child: IndexedStack(
-          index: _currentIndex.clamp(0, 2 - 1),
-          children: [
-            TasksPage(),
-            SettingsPage(), // Placeholder for Notifications Page
-          ],
+          index: _currentIndex.clamp(0, 1),
+          children: const [TasksPage(), SettingsPage()],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToAddTask(context),
+        backgroundColor: const Color(0xFF4A90E2),
+        elevation: 6,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, color: Colors.white, size: 30),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: CustomBottomNavigation(
         currentIndex: _currentIndex,
         onTap: (index) {
+          sl<TaskSelectionCubit>().clearSelection();
           setState(() {
             _currentIndex = index;
           });
-          // // Handle navigation to other pages
-          // _handleNavigation(index);
         },
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(10),
-        child: Container(),
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kToolbarHeight + 10),
+      child: BlocBuilder<TaskSelectionCubit, Set<int>>(
+        bloc: sl<TaskSelectionCubit>(),
+        builder: (context, selectedIds) {
+          final isSelectionMode = selectedIds.isNotEmpty;
+
+          return AppBar(
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(10),
+              child: Container(),
+            ),
+            shape: Border(
+              bottom: BorderSide(
+                color: isDark ? Colors.white12 : Colors.black12,
+                width: 0.5,
+              ),
+            ),
+            backgroundColor: theme.scaffoldBackgroundColor,
+            elevation: 0,
+            leading: isSelectionMode
+                ? IconButton(
+                    icon: Icon(Icons.close, color: theme.colorScheme.onSurface),
+                    onPressed: () {
+                      sl<TaskSelectionCubit>().clearSelection();
+                    },
+                  )
+                : null,
+            title: Text(
+              isSelectionMode
+                  ? 'تم تحديد (${selectedIds.length})'
+                  : 'وقتي أمانة',
+              style: TextStyle(
+                color: theme.colorScheme.onSurface,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Cairo',
+              ),
+            ),
+            centerTitle: true,
+            actions: isSelectionMode
+                ? [
+                    IconButton(
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.redAccent.withValues(alpha: 0.15),
+                        foregroundColor: Colors.redAccent,
+                      ),
+                      onPressed: () => _confirmDeleteSelectedTasks(context, selectedIds),
+                      icon: const Icon(Icons.delete_rounded, color: Colors.redAccent),
+                    ),
+                    const SizedBox(width: 10),
+                  ]
+                : [
+                    IconButton(
+                      style: IconButton.styleFrom(
+                        backgroundColor: theme.colorScheme.surface,
+                        foregroundColor: theme.colorScheme.onSurface,
+                      ),
+                      onPressed: () {
+                        sl<SearchBtnCubit>().toggle();
+                      },
+                      icon: Icon(Icons.search, color: theme.colorScheme.onSurface),
+                    ),
+                    const SizedBox(width: 10),
+                  ],
+          );
+        },
       ),
-      shape: const Border(
-        bottom: BorderSide(color: Colors.white, width: 0.2),
-      ),
-      backgroundColor: const Color(0xFF1A1D2E),
-      elevation: 0,
-      title: const Text(
-        'مهامي',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      centerTitle: true,
-      leading: Container(
-        margin: const EdgeInsets.symmetric(vertical: 7.5, horizontal: 2.0),
-        decoration: BoxDecoration(
-          color: const Color(0xFF4A90E2),
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        child: IconButton(
-          onPressed: () => _navigateToAddTask(context),
-          icon: const Icon(Icons.add, color: Colors.white),
-        ),
-      ),
-      actions: [
-        // Search icon
-        IconButton(
-          onPressed: () {
-           sl<SearchBtnCubit>().toggle();
-          },
-          icon: const Icon(Icons.search, color: Colors.white),
-        ),
-        // Filter icon
-        IconButton(
-          onPressed: () => _showFilterDialog(),
-          icon: const Icon(Icons.filter_list, color: Colors.white),
-        ),
-      ],
     );
   }
 
-  void _showFilterDialog() {
+  void _confirmDeleteSelectedTasks(BuildContext context, Set<int> selectedIds) {
+    final theme = Theme.of(context);
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF2A2D3E),
-        title: const Text(
-          'تصفية المهام',
-          style: TextStyle(color: Colors.white),
+      builder: (ctx) => AlertDialog(
+        backgroundColor: theme.colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'حذف المهام المحددة',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: const Text(
-                'جميع المهام',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                sl<TasksBloc>().add(LoadTasks());
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'المهام المكتملة',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                sl<TasksBloc>().add(FilterTasksByStatus(true));
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'المهام المعلقة',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                sl<TasksBloc>().add(FilterTasksByStatus(false));
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'أولوية عالية',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                sl<TasksBloc>().add(FilterTasksByPriority(Priority.high));
-              },
-            ),
-          ],
+        content: Text(
+          'هل أنت تأكد من رغبتك في حذف (${selectedIds.length}) من المهام المحددة؟',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+          ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'إلغاء',
+              style: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(ctx);
+              sl<TasksBloc>().add(DeleteMultipleTasks(selectedIds.toList()));
+              sl<TaskSelectionCubit>().clearSelection();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('تم حذف المهام المحددة بنجاح'),
+                  backgroundColor: Colors.redAccent,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            child: const Text('حذف', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }

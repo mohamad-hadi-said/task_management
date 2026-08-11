@@ -24,9 +24,20 @@ class DeleteTask extends TasksEvent {
   DeleteTask(this.taskId);
 }
 
+class DeleteMultipleTasks extends TasksEvent {
+  final List<int> taskIds;
+  DeleteMultipleTasks(this.taskIds);
+}
+
 class ToggleTaskStatus extends TasksEvent {
   final int taskId;
   ToggleTaskStatus(this.taskId);
+}
+
+class ChangeTaskStatus extends TasksEvent {
+  final int taskId;
+  final TaskStatus status;
+  ChangeTaskStatus(this.taskId, this.status);
 }
 
 class SearchTasks extends TasksEvent {
@@ -43,3 +54,8 @@ class FilterTasksByStatus extends TasksEvent {
   final bool isCompleted;
   FilterTasksByStatus(this.isCompleted);
 }
+
+class FilterTasksBySpecificStatus extends TasksEvent {
+  final TaskStatus status;
+  FilterTasksBySpecificStatus(this.status);
+}

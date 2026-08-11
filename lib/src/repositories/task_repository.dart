@@ -31,6 +31,10 @@ class TaskRepository {
     return await _databaseHelper.getTasksByPriority(priority);
   }
 
+  Future<List<TaskModel>> getTasksByStatus(TaskStatus status) async {
+    return await _databaseHelper.getTasksByStatus(status);
+  }
+
   Future<List<TaskModel>> getCompletedTasks() async {
     return await _databaseHelper.getCompletedTasks();
   }
@@ -81,34 +85,20 @@ class TaskRepository {
   }
 
   // Utility methods
-  Future<void> markTaskAsCompleted(int taskId) async {
+  Future<void> updateTaskStatus(int taskId, TaskStatus status) async {
     final task = await getTaskById(taskId);
     if (task != null) {
-      final updatedTask = TaskModel(
-        id: task.id,
-        title: task.title,
-        note: task.note,
-        dueTime: task.dueTime,
-        isDone: true,
-        priority: task.priority,
-      );
+      final updatedTask = task.copyWith(status: status);
       await updateTask(updatedTask);
     }
   }
 
+  Future<void> markTaskAsCompleted(int taskId) async {
+    await updateTaskStatus(taskId, TaskStatus.done);
+  }
+
   Future<void> markTaskAsPending(int taskId) async {
-    final task = await getTaskById(taskId);
-    if (task != null) {
-      final updatedTask = TaskModel(
-        id: task.id,
-        title: task.title,
-        note: task.note,
-        dueTime: task.dueTime,
-        isDone: false,
-        priority: task.priority,
-      );
-      await updateTask(updatedTask);
-    }
+    await updateTaskStatus(taskId, TaskStatus.todo);
   }
 
   Future<void> markSubtaskAsCompleted(int subtaskId) async {
@@ -163,7 +153,7 @@ class TaskRepository {
     final allTasks = await getAllTasks();
 
     return allTasks
-        .where((task) => !task.isDone && task.dueTime.isBefore(now))
+        .where((task) => task.status != TaskStatus.done && task.dueTime.isBefore(now))
         .toList();
   }
 

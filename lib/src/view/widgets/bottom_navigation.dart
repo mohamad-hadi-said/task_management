@@ -12,37 +12,33 @@ class CustomBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 80,
-      decoration: const BoxDecoration(
-        color: Color(0xFF1A1D2E),
-        border: Border(
-          top: BorderSide(color: Colors.grey, width: 0.2),
+    return BottomAppBar(
+      color: Theme.of(context).colorScheme.surface,
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 8.0,
+      elevation: 8,
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        height: 60,
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(
+              icon: Icons.check_circle_outline,
+              label: 'المهام',
+              index: 0,
+              isSelected: currentIndex == 0,
+            ),
+            const SizedBox(width: 48), // Space for central FAB
+            _buildNavItem(
+              icon: Icons.settings_outlined,
+              label: 'الإعدادات',
+              index: 1,
+              isSelected: currentIndex == 1,
+            ),
+          ],
         ),
-        
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildNavItem(
-            icon: Icons.check_circle_outline,
-            label: 'المهام',
-            index: 0,
-            isSelected: currentIndex == 0,
-          ),
-          // _buildNavItem(
-          //   icon: Icons.notifications,
-          //   label: 'الإشعارات',
-          //   index: 1,
-          //   isSelected: currentIndex == 1,
-          // ),
-          _buildNavItem(
-            icon: Icons.settings_outlined,
-            label: 'الإعدادات',
-            index: 2,
-            isSelected: currentIndex == 2,
-          ),
-        ],
       ),
     );
   }
@@ -55,23 +51,24 @@ class CustomBottomNavigation extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () => onTap?.call(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-            icon,
-            color: isSelected ? const Color(0xFF4A90E2) : Colors.white,
-            size: 28,
-          ),
-            const SizedBox(height: 4),
+              icon,
+              color: isSelected ? const Color(0xFF4A90E2) : Colors.grey[400],
+              size: 24,
+            ),
+            const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? const Color(0xFF4A90E2) : Colors.white,
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.normal,
+                color: isSelected ? const Color(0xFF4A90E2) : Colors.grey[400],
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
             ),
           ],

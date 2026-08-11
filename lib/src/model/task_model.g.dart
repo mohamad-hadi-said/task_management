@@ -11,7 +11,9 @@ TaskModel _$TaskModelFromJson(Map<String, dynamic> json) => TaskModel(
   title: json['title'] as String,
   note: json['note'] as String,
   dueTime: DateTime.parse(json['due_time'] as String),
-  isDone: json['is_done'] as bool? ?? false,
+  status:
+      $enumDecodeNullable(_$TaskStatusEnumMap, json['status']) ??
+      TaskStatus.todo,
   priority:
       $enumDecodeNullable(_$PriorityEnumMap, json['priority']) ??
       Priority.medium,
@@ -22,8 +24,14 @@ Map<String, dynamic> _$TaskModelToJson(TaskModel instance) => <String, dynamic>{
   'title': instance.title,
   'note': instance.note,
   'due_time': instance.dueTime.toIso8601String(),
-  'is_done': instance.isDone,
+  'status': _$TaskStatusEnumMap[instance.status]!,
   'priority': _$PriorityEnumMap[instance.priority]!,
+};
+
+const _$TaskStatusEnumMap = {
+  TaskStatus.todo: 'todo',
+  TaskStatus.inProgress: 'inProgress',
+  TaskStatus.done: 'done',
 };
 
 const _$PriorityEnumMap = {
@@ -31,3 +39,4 @@ const _$PriorityEnumMap = {
   Priority.medium: 'medium',
   Priority.low: 'low',
 };
+

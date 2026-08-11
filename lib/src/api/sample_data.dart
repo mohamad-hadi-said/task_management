@@ -18,7 +18,7 @@ class SampleData {
         title: 'شراء البقالة',
         note: 'شراء الأغراض الأساسية من السوبر ماركت',
         dueTime: DateTime.now().copyWith(hour: 10, minute: 0),
-        isDone: false,
+        status: TaskStatus.todo,
         priority: Priority.high,
       );
       await repository.createTaskWithSubtasks(task1, [
@@ -34,7 +34,7 @@ class SampleData {
         title: 'حجز موعد',
         note: 'حجز موعد مع الطبيب للفحص الدوري',
         dueTime: DateTime.now().copyWith(hour: 11, minute: 30),
-        isDone: false,
+        status: TaskStatus.inProgress,
         priority: Priority.medium,
       );
       await repository.createTaskWithSubtasks(task2, [
@@ -49,7 +49,7 @@ class SampleData {
         title: 'دفع الفواتير',
         note: 'دفع فواتير الكهرباء والماء والإنترنت',
         dueTime: DateTime.now().copyWith(hour: 13, minute: 0),
-        isDone: false,
+        status: TaskStatus.done,
         priority: Priority.low,
       );
       await repository.createTaskWithSubtasks(task3, [
@@ -64,7 +64,7 @@ class SampleData {
         title: 'اجتماع المشروع',
         note: 'اجتماع فريق العمل لمناقشة تقدم المشروع',
         dueTime: DateTime.now().copyWith(hour: 15, minute: 0),
-        isDone: false,
+        status: TaskStatus.todo,
         priority: Priority.high,
       );
       await repository.createTaskWithSubtasks(task4, [
@@ -79,7 +79,7 @@ class SampleData {
         title: 'جلسة الجيم',
         note: 'ممارسة الرياضة في النادي الرياضي',
         dueTime: DateTime.now().copyWith(hour: 17, minute: 0),
-        isDone: false,
+        status: TaskStatus.inProgress,
         priority: Priority.medium,
       );
       await repository.createTaskWithSubtasks(task5, [

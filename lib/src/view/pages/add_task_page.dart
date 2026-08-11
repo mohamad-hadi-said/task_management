@@ -23,6 +23,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     minute: TimeOfDay.now().minute,
   );
   Priority _priority = Priority.medium;
+  TaskStatus _status = TaskStatus.todo;
 
   final List<String> _subtasks = [];
   final _subtaskController = TextEditingController();
@@ -37,15 +38,16 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1D2E),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1D2E),
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'إضافة مهمة جديدة',
           style: TextStyle(
-            color: Colors.white,
+            color: theme.colorScheme.onSurface,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -53,7 +55,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.close, color: Colors.white),
+          icon: Icon(Icons.close, color: theme.colorScheme.onSurface),
         ),
         actions: [
           TextButton(
@@ -131,6 +133,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
               _buildPrioritySelector(),
               const SizedBox(height: 24),
 
+              // Task Status
+              _buildSectionTitle('حالة المهمة'),
+              const SizedBox(height: 8),
+              _buildStatusSelector(),
+              const SizedBox(height: 24),
+
               // Subtasks
               _buildSectionTitle('المهام الفرعية'),
               const SizedBox(height: 8),
@@ -146,10 +154,11 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   Widget _buildSectionTitle(String title) {
+    final theme = Theme.of(context);
     return Text(
       title,
-      style: const TextStyle(
-        color: Colors.white,
+      style: TextStyle(
+        color: theme.colorScheme.onSurface,
         fontSize: 16,
         fontWeight: FontWeight.w600,
       ),
@@ -162,19 +171,30 @@ class _AddTaskPageState extends State<AddTaskPage> {
     int maxLines = 1,
     String? Function(String?)? validator,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return TextFormField(
       controller: controller,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: theme.colorScheme.onSurface),
       maxLines: maxLines,
       validator: validator,
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.grey),
+        hintStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
         filled: true,
-        fillColor: const Color(0xFF2A2D3E),
+        fillColor: theme.colorScheme.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(
+            color: isDark ? Colors.white12 : Colors.black12,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: isDark ? Colors.white12 : Colors.black12,
+          ),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -189,26 +209,35 @@ class _AddTaskPageState extends State<AddTaskPage> {
     required String value,
     required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF2A2D3E),
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark ? Colors.white12 : Colors.black12,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
+              style: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               value,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: theme.colorScheme.onSurface,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
@@ -255,20 +284,25 @@ class _AddTaskPageState extends State<AddTaskPage> {
     required Color color,
   }) {
     final isSelected = _priority == priority;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () => setState(() => _priority = priority),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? color : const Color(0xFF2A2D3E),
+          color: isSelected ? color : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: isSelected ? null : Border.all(color: Colors.grey),
+          border: isSelected
+              ? null
+              : Border.all(color: isDark ? Colors.white12 : Colors.black12),
         ),
         child: Text(
           label,
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey,
+            color: isSelected ? Colors.white : theme.colorScheme.onSurface.withValues(alpha: 0.7),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -295,16 +329,24 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   Widget _buildSubtasksList() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     if (_subtasks.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF2A2D3E),
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark ? Colors.white12 : Colors.black12,
+          ),
         ),
-        child: const Text(
+        child: Text(
           'لا توجد مهام فرعية',
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
         ),
       );
     }
@@ -317,15 +359,18 @@ class _AddTaskPageState extends State<AddTaskPage> {
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF2A2D3E),
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isDark ? Colors.white12 : Colors.black12,
+            ),
           ),
           child: Row(
             children: [
               Expanded(
                 child: Text(
                   subtask,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: theme.colorScheme.onSurface),
                 ),
               ),
               IconButton(
@@ -354,6 +399,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   Future<void> _selectDate() async {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final date = await showDatePicker(
       context: context,
       initialDate: _dueDate,
@@ -361,13 +409,20 @@ class _AddTaskPageState extends State<AddTaskPage> {
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF4A90E2),
-              onPrimary: Colors.white,
-              surface: Color(0xFF2A2D3E),
-              onSurface: Colors.white,
-            ),
+          data: theme.copyWith(
+            colorScheme: isDark
+                ? const ColorScheme.dark(
+                    primary: Color(0xFF4A90E2),
+                    onPrimary: Colors.white,
+                    surface: Color(0xFF2A2D3E),
+                    onSurface: Colors.white,
+                  )
+                : const ColorScheme.light(
+                    primary: Color(0xFF4A90E2),
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: Color(0xFF1A1D2E),
+                  ),
           ),
           child: child!,
         );
@@ -380,18 +435,28 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   Future<void> _selectTime() async {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final time = await showTimePicker(
       context: context,
       initialTime: _dueTime,
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF4A90E2),
-              onPrimary: Colors.white,
-              surface: Color(0xFF2A2D3E),
-              onSurface: Colors.white,
-            ),
+          data: theme.copyWith(
+            colorScheme: isDark
+                ? const ColorScheme.dark(
+                    primary: Color(0xFF4A90E2),
+                    onPrimary: Colors.white,
+                    surface: Color(0xFF2A2D3E),
+                    onSurface: Colors.white,
+                  )
+                : const ColorScheme.light(
+                    primary: Color(0xFF4A90E2),
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: Color(0xFF1A1D2E),
+                  ),
           ),
           child: child!,
         );
@@ -418,6 +483,65 @@ class _AddTaskPageState extends State<AddTaskPage> {
     });
   }
 
+  Widget _buildStatusSelector() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildStatusOption(
+            status: TaskStatus.todo,
+            color: const Color(0xFF4A90E2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildStatusOption(
+            status: TaskStatus.inProgress,
+            color: const Color(0xFFF39C12),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildStatusOption(
+            status: TaskStatus.done,
+            color: const Color(0xFF27AE60),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusOption({
+    required TaskStatus status,
+    required Color color,
+  }) {
+    final isSelected = _status == status;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: () => setState(() => _status = status),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? color : theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: isSelected
+              ? null
+              : Border.all(color: isDark ? Colors.white12 : Colors.black12),
+        ),
+        child: Text(
+          status.arabicTitle,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: isSelected ? Colors.white : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _saveTask() {
     if (_formKey.currentState!.validate()) {
       final dueDateTime = DateTime(
@@ -433,7 +557,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         title: _titleController.text,
         note: _noteController.text,
         dueTime: dueDateTime,
-        isDone: false,
+        status: _status,
         priority: _priority,
       );
 
